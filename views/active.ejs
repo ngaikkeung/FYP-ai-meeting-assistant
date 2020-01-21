@@ -20,41 +20,53 @@
     <div class="container">
         <div class="row mt-2">
             <div class="col">
-                <textarea id="speakTextArea" type="text" class="form-control voice-input" readonly>waiting for voice input ...</textarea>
-                <button id="speakBtn" class="btn btn-primary" onclick="toggleStartStop()"></button>
-            </div>
-            <div class="vl"></div>
-            <div class="col ">right...</div>
+                <div class="speakTranscprit">
+                    <div class="final pt-2 px-2 text-dark font-weight-bold text-justify" id="finalTranscript">Waiting for voice ...</div>
+                    <span class="interim text-secondary font-italic" id="interimTranscript"></span>
+                </div>
+                <button id="speakBtn" class="mt-3 btn btn-primary" onclick="toggleStartStop()"></button>
+            </div> <!-- left column finished-->
+            <div class="vl"></div> <!-- Division line -->
+            <div class="col ">right...</div><!-- right column finished-->
         </div>
     </div>
 </body>
 <script type="text/javascript">
     if (!('webkitSpeechRecognition' in window)) {
-        upgrade();
+        alert("Only support in Google Chrome latest version.");
     } else{
-        var recognizing;
-        var recognition = new webkitSpeechRecognition();
+        let finalTranScript = "";
+        let recognizing;
+        let recognition = new webkitSpeechRecognition();
         recognition.continuous = true;
         recognition.interimResults = true;
+        // recognition.lang = 'en-US';
         reset();
         recognition.onend = reset();
 
-        recognition.onresult = function (event) {
-            console.log("is recognizing: ", recognizing);
-            for (var i = event.resultIndex; i < event.results.length; ++i) {
+        recognition.onresult = (event) => {
+            let interimTranscript = "";
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
                 if (event.results[i].isFinal) {
-                    // textarea.value += event.results[i][0].transcript;
-                    $('#speakTextArea').text("");
-                    $('#speakTextArea').append(event.results[i][0].transcript);
+                    finalTranScript += event.results[i][0].transcript;
+                }else{
+                    interimTranscript += event.results[i][0].transcript;
                 }
+                $('#finalTranscript').text(finalTranScript);
+                $('#interimTranscript').text(interimTranscript);
             }
         }
-        recognition.onerror = function(event) {
+        recognition.onerror = (event) => {
             console.log("ERROR : ", event.error);
         };
-        
+        recognition.onend = (event) => {
+            console.log("event", event);
+        }
+
+
         function reset() {
             recognizing = false;
+            finalTranScript = "";
             $('#speakBtn').text('Click to Speak');
         }
 

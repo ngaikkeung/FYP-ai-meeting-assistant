@@ -1,10 +1,19 @@
-.vl {
+.vl{
     border-left: 6px solid green;
     height: 100vh;
 }
-textarea {
+textarea{
     resize: none;
 }
 textarea.voice-input{
     height: 90vh ;
+}
+
+.speakTranscprit{
+    min-height: 80vh;
+    border: 1px solid gray;
+}
+ 
+#interimTranscript{
+    padding-left: .5rem ;
 }
