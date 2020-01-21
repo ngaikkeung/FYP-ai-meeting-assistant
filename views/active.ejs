@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="/public/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/public/css/main.css">
+    
+    <!-- jquery -->
+    <script src="/public/js/jquery-3.4.1.js"></script>
+
+    <title>Active</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row mt-2">
+            <div class="col">
+                <textarea id="speakTextArea" type="text" class="form-control voice-input" readonly>waiting for voice input ...</textarea>
+                <button id="speakBtn" class="btn btn-primary" onclick="toggleStartStop()"></button>
+            </div>
+            <div class="vl"></div>
+            <div class="col ">right...</div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+    if (!('webkitSpeechRecognition' in window)) {
+        upgrade();
+    } else{
+        var recognizing;
+        var recognition = new webkitSpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        reset();
+        recognition.onend = reset();
+
+        recognition.onresult = function (event) {
+            console.log("is recognizing: ", recognizing);
+            for (var i = event.resultIndex; i < event.results.length; ++i) {
+                if (event.results[i].isFinal) {
+                    // textarea.value += event.results[i][0].transcript;
+                    $('#speakTextArea').text("");
+                    $('#speakTextArea').append(event.results[i][0].transcript);
+                }
+            }
+        }
+        recognition.onerror = function(event) {
+            console.log("ERROR : ", event.error);
+        };
+        
+        function reset() {
+            recognizing = false;
+            $('#speakBtn').text('Click to Speak');
+        }
+
+        function toggleStartStop() {
+            if (recognizing) {
+                recognition.stop();
+                reset();
+                console.log("is recognizing: ", recognizing);
+            } else {
+                recognition.start();
+                recognizing = true;
+                $('#speakBtn').text('Click to Stop');
+                console.log("is recognizing: ", recognizing);
+            }
+        }
+    }
+    
+</script>
+</html>
