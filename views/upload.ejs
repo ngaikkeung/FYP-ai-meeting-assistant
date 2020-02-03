@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="./public/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./public/css/main.css">
+
+    <title>Home Page</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="mt-5 text-center">
+            <h1>Main Page</h1>
+        </div>
+    <form action="/upload" method="post" enctype="multipart/form-data"> 
+            <div class="form-group">
+                <label for="minute">會議紀錄</label>
+                <input type="file" id="minute" name="minute" accept=".pdf">
+            </div>
+            <button type="submit" class="btn btn-success">點選新增</button>
+        </form>
+    </div>
+</body>
+
+</html>
