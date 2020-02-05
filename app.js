@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const indexRouter = require('./routers/index');
 const uploadRouter = require('./routers/upload');
 const activeRouter = require('./routers/active');
-
+const errorRouter = require('./routers/error');
 
 // Set view engine
 app.set('view engine', 'ejs');
@@ -19,6 +19,6 @@ app.use(bodyParser.urlencoded({extended:false}))
 app.use('/', indexRouter);
 app.use('/active', activeRouter);
 app.use('/upload', uploadRouter);
-
+app.use('/*', errorRouter);
 
 app.listen(3000, () => console.log('app is running at port 3000...'));
