@@ -1,88 +1,193 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <!-- Required meta tags -->
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <!-- CSS -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="/public/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/public/css/main.css">
-    
-    <!-- jquery -->
-    <script src="/public/js/jquery-3.4.1.js"></script>
-
-    <title>Active</title>
+    <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous"> -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <title>Layout</title>
 </head>
+<style>
+    .custom-checkbox {
+        padding-left: 0;
+    }
 
+    label.custom-control-label {
+        padding-right: 1.5rem;
+    }
+
+    .custom-control-label::before,
+    .custom-control-label::after {
+        right: 0;
+        left: auto;
+    }
+</style>
 <body>
-    <div class="container">
-        <div class="row mt-2">
-            <div class="col">
-                <div class="speakTranscprit">
-                    <div class="final pt-2 px-2 text-dark font-weight-bold text-justify" id="finalTranscript">Waiting for voice ...</div>
-                    <span class="interim text-secondary font-italic" id="interimTranscript"></span>
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <h1>Power Meeting</h1>
+        </div>
+        <div class="row">
+            <div class="col" style="height: 600px;">
+                <div class="row">
+                    <div class="col">
+                        <button type="button" class="btn btn-primary" onclick="start()">
+                            <img src="/public/image/play.png" class="mr-1" style="width: 10%;">Start
+                        </button>
+                    </div>
+                    <div class="col">
+                        <button type="button" class="btn btn-danger" onclick="toggleStartStop()">
+                            <img src="/public/image/pause.png" class="mr-1" style="width: 10%;">Stop
+                        </button>
+                    </div>
+                    <div class="col">
+                        <button type="button" class="btn btn-info">
+                            <img src="/public/image/question.png" class="mr-1" style="width: 10%;">How To Use
+                        </button>
+                    </div>
                 </div>
-                <button id="speakBtn" class="mt-3 btn btn-primary" onclick="toggleStartStop()"></button>
-            </div> <!-- left column finished-->
-            <div class="vl"></div> <!-- Division line -->
-            <div class="col ">right...</div><!-- right column finished-->
+                <div class="row mt-2">
+                    <div class="col border" style="height: 500px;">
+                        <div class="speakTranscprit">
+                            <div class="final pt-2 px-2 text-dark font-weight-bold text-justify" id="finalTranscript">Waiting for voice ...</div>
+                            <span class="interim text-secondary font-italic" id="interimTranscript"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-1">
+                    <div class="col">
+                        <div class="custom-control custom-checkbox custom-control-inline">
+                            <input type="checkbox" id="location" value="location" name="custom1" class="custom-control-input">
+                            <label class="custom-control-label" for="location">Auto Save</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-1 text-center">
+                <img src="/public/image/line.png" class="w-50"> 
+            </div>
+            <div class="col" style="height: 600px;">
+                <div class="row">
+                    <div class="col-3.5">
+                        <button type="button" class="btn btn-success" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                            Advanced Search <i class="fa fa-caret-down"></i>
+                        </button>
+                    </div>
+                    <div class="col">
+                        <div class="input-group">
+                            <input type="search" placeholder="Enter keywords or phrase" aria-describedby="advancedSearch" class="form-control">
+                            <div class="input-group-append">
+                                <button id="advancedSearch" type="submit" class="btn btn-primary"><i class="fa fa-search" aria-hidden="true"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>                
+                <div class="collapse" id="collapseExample">
+                    <div class="row mt-2">
+                        <div class="col">
+                            <h5>Category1</h5>
+                            <hr>
+                            <ul>
+                                <li>one</li>
+                                <li>two</li>
+                                <li>three</li>
+                            </ul>
+                        </div>
+                        <div class="col">
+                            <h5>Category2</h5>
+                            <hr>
+                            <ul>
+                                <li>one</li>
+                                <li>two</li>
+                                <li>three</li>
+                            </ul>
+                        </div>
+                        <div class="col">
+                            <h5>Category3</h5>
+                            <hr>
+                            <ul>
+                                <li>one</li>
+                                <li>two</li>
+                                <li>three</li>
+                            </ul>
+                        </div>
+                        <div class="col">
+                            <h5>Category4</h5>
+                            <hr>
+                            <ul>
+                                <li>one</li>
+                                <li>two</li>
+                                <li>three</li>
+                            </ul>
+                        </div>
+                        <div class="col">
+                            <h5>Category5</h5>
+                            <hr>
+                            <ul>
+                                <li>one</li>
+                                <li>two</li>
+                                <li>three</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>                                      
+            </div>
         </div>
     </div>
 </body>
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
 <script type="text/javascript">
-    if (!('webkitSpeechRecognition' in window)) {
-        alert("Only support in Google Chrome latest version.");
-    } else{
-        let finalTranScript = "";
-        let recognizing;
-        let recognition = new webkitSpeechRecognition();
-        recognition.continuous = true;
-        recognition.interimResults = true;
-        // recognition.lang = 'en-US';
-        reset();
-        recognition.onend = reset();
-
-        recognition.onresult = (event) => {
-            let interimTranscript = "";
-            for (let i = event.resultIndex; i < event.results.length; ++i) {
-                if (event.results[i].isFinal) {
-                    finalTranScript += event.results[i][0].transcript;
-                }else{
-                    interimTranscript += event.results[i][0].transcript;
-                }
-                $('#finalTranscript').text(finalTranScript);
-                $('#interimTranscript').text(interimTranscript);
+if (!('webkitSpeechRecognition' in window)) {
+    alert("Only support in Google Chrome latest version.");
+} else{
+    let finalTranScript = "";
+    let recognizing;
+    let recognition = new webkitSpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    // recognition.lang = 'en-US';
+    reset();
+    recognition.onend = reset();
+    recognition.onresult = (event) => {
+        let interimTranscript = "";
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+            if (event.results[i].isFinal) {
+                finalTranScript += event.results[i][0].transcript;
+            }else{
+                interimTranscript += event.results[i][0].transcript;
             }
-        }
-        recognition.onerror = (event) => {
-            console.log("ERROR : ", event.error);
-        };
-        recognition.onend = (event) => {
-            console.log("event", event);
-        }
-
-
-        function reset() {
-            recognizing = false;
-            finalTranScript = "";
-            $('#speakBtn').text('Click to Speak');
-        }
-
-        function toggleStartStop() {
-            if (recognizing) {
-                recognition.stop();
-                reset();
-                console.log("is recognizing: ", recognizing);
-            } else {
-                recognition.start();
-                recognizing = true;
-                $('#speakBtn').text('Click to Stop');
-                console.log("is recognizing: ", recognizing);
-            }
+            $('#finalTranscript').text(finalTranScript);
+            $('#interimTranscript').text(interimTranscript);
         }
     }
-    
+    recognition.onerror = (event) => {
+        console.log("ERROR : ", event.error);
+    };
+    recognition.onend = (event) => {
+        console.log("event", event);
+    }
+    function reset() {
+        recognizing = false;
+        finalTranScript = "";
+        $('#speakBtn').text('Click to Speak');
+    }
+    function start() {
+        recognition.start();
+        recognizing = true;
+        $('#speakBtn').text('Click to Stop');
+        console.log("is recognizing: ", recognizing);
+    }
+    function toggleStartStop() {
+        if (recognizing) {
+            recognition.stop();
+            reset();
+            console.log("is recognizing: ", recognizing);
+        } 
+    }
+}
 </script>
 </html>
