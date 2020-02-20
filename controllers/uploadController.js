@@ -44,12 +44,12 @@ exports.postUpload = (req, res) => {
         pdfParser.on("pdfParser_dataReady", pdfData => {
             let fileName = `./${files.minute.name.substring(0, files.minute.name.indexOf("."))}.json`;
             // fs.writeFile(fileName, JSON.stringify(pdfData));
-            // res.json({"data": pdfData});
+            res.json({"data": pdfData});
             pdfJson = pdfData.formImage;
             minuteObject = extractTitleCountDateOfMeeting(pdfJson);
             // extractPerson(pdfJson);
             // extractPersonWithPosition(pdfJson);
-            res.send(JSON.stringify(minuteObject, null, '\t'));
+            //res.send(JSON.stringify(minuteObject, null, '\t'));
         });
         pdfParser.loadPDF(files.minute.path);
     })

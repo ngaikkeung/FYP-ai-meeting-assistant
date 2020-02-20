@@ -145,6 +145,7 @@ if (!('webkitSpeechRecognition' in window)) {
     alert("Only support in Google Chrome latest version.");
 } else{
     let finalTranScript = "";
+    let analysisTranScript;
     let recognizing;
     let recognition = new webkitSpeechRecognition();
     recognition.continuous = true;
@@ -182,11 +183,33 @@ if (!('webkitSpeechRecognition' in window)) {
         console.log("is recognizing: ", recognizing);
     }
     function toggleStartStop() {
-        if (recognizing) {
+        if (recognizing) {             
             recognition.stop();
+            analysisTranScript = document.getElementById('interimTranscript').textContent;
+            analysis();
             reset();
             console.log("is recognizing: ", recognizing);
-        } 
+            console.log("analysisTranScript: ", analysisTranScript);             
+        }        
+    }
+    function analysis() {
+        let document ={
+            content: analysisTranScript,
+            type: 'PLAIN_TEXT'
+        };
+        console.log(document);
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({document: document })
+        })
+        .then(res => {
+            return res.json();
+        }).then(result => {
+            console.log(result);
+        })
     }
 }
 </script>
