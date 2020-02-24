@@ -11,10 +11,12 @@
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.19.0",
+    "dotenv": "^8.2.0",
     "ejs": "^3.0.1",
     "express": "^4.17.1",
     "formidable": "^1.2.1",
-    "pdf-parse": "^1.1.1",
-    "pdf2json": "^1.1.8"
+    "mongodb": "^3.5.3",
+    "node-fetch": "^2.6.0",
+    "pdf-parse": "^1.1.1"
   }
 }
