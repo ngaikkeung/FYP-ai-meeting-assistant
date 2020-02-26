@@ -38,6 +38,52 @@ module.exports = class DB{
             }
         }
 
+        this.search = (analysisEntities, callback) => {
+            let entities = [];
+            let response = {};
+
+            for(let object of analysisEntities){
+                entities.push(object.name)
+            }
+
+            if(isConnected){
+                loopSearch(entities, database, (result) => {
+                    console.log("RESULT: ", result);
+                })
+            }else{
+                callback(true, "DB is disconnected");
+            }
+        }
         
     }
+}
+
+const loopSearch = (entities, db, callback) => {
+    let dbSearchCount = 0;
+    let result = [];
+    for(let i = 0; i < entities.length; i++){
+        let search = {
+            $text: {
+                $search: `${entities[i]}`
+            }
+        };
+        console.log("Seacrh: ", search);
+        db.collection("minutes").find(search).toArray((err, documents) => {
+            if(err){
+                console.log("DB Search err:", err);
+                return err;
+            }
+            for(let doc of documents){
+                result.push(doc);
+            }
+            dbSearchCount++;
+            console.log("db count: ", dbSearchCount)
+        })
+    }
+    if(dbSearchCount == entities.length){
+        return callback(result)
+    }else{
+        console.log("END")
+    }
+    console.log("END2")
 }
