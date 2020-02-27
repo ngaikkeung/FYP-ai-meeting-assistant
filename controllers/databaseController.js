@@ -27,7 +27,8 @@ module.exports = class DB{
                 date: minuteObj.date,
                 time: minuteObj.time,
                 venue: minuteObj.venue,
-                content: minuteObj.content
+                content: minuteObj.content,
+                items: minuteObj.items
             }
             if(isConnected){
                 database.collection("minutes").insertOne(documentToInsert, (err, res) => {

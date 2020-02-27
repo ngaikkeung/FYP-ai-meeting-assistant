@@ -12,27 +12,21 @@ const pdf = require('pdf-parse');
 
 const PERSON_PREFIX = ['Mr', 'Ms', 'Miss', 'Dr', 'Ir'];
 const PERSON_TITLE = ['JP', 'MH', 'SBS', 'BBS'];
-let minute = {
-    'title' : null,
-    'numberOfMeeting' : null,
-    'date' : null,
-    'time' : null,
-    'venue' : null,
-    'content' : null,
-    // 'present' : null,
-    // 'absent' : null,
-    // 'inAttendance' : null,
-    // 'invitAttendance' : null,
-    // 'instruction' : null,
-    // 'discussion' : nully
-}
-
 
 exports.getUpload = (req, res) => {
     res.render('upload');
 }
 
 exports.postUpload = (req, res) => {
+    let minute = {
+        'title' : null,
+        'numberOfMeeting' : null,
+        'date' : null,
+        'time' : null,
+        'venue' : null,
+        'content' : null,
+        'items' : []
+    }
     const form = new formidable.IncomingForm();
     let pdfData = null;
     form.parse(req, (err, fields, files) => {
@@ -45,10 +39,12 @@ exports.postUpload = (req, res) => {
             // PDF text
             pdfData = data.text;
             pdfBasicInfoPartText = pdfData.substring(pdfData.indexOf("Minutes"), pdfData.indexOf("Present"));
-            endPartOfText = pdfData.substring(pdfData.indexOf("*")).replace(/\n \n/g, "").replace(/\n/g, "");
-            minute.content = endPartOfText;
-            extractBasicInforOfMeeting(pdfBasicInfoPartText);
-
+            // endPartOfText = pdfData.substring(pdfData.indexOf("*")).replace(/\n \n/g, "").replace(/\n/g, "");
+            endPartOfText = pdfData.substring(pdfData.indexOf("*"));
+            minute.content = endPartOfText.replace(/\n \n/g, "").replace(/\n/g, "");
+            extractBasicInforOfMeeting(pdfBasicInfoPartText, minute);
+            extractItemOfMeeting(endPartOfText, minute)
+            
             DB.uploadMinute(minute, (err, res) => {
                 if(err){
                     console.log("DB insert failed. ", err);
@@ -71,7 +67,7 @@ exports.postUpload = (req, res) => {
  * Extract the basic information from a parsed text minute.
  * @param {String} text The parsed text data from pdf file.
  */
-const extractBasicInforOfMeeting = (text) => {
+const extractBasicInforOfMeeting = (text, minute) => {
     let title = text.substring(text.indexOf("Minutes"), text.indexOf("Date:")).trim().replace(/\r?\n|\r/g, "");
     let date = text.substring(text.indexOf("Date:") + 5, text.indexOf("Time:")).trim();
     let time = text.substring(text.indexOf("Time:") + 5, text.indexOf("Venue:")).trim().replace('.', '');
@@ -83,6 +79,69 @@ const extractBasicInforOfMeeting = (text) => {
     minute.time = Date.parse((date.substring(0, date.indexOf('(')) + time));
     minute.venue = venue;
 }
+
+/**
+ * Extract the item title information from a parsed text minute.
+ * 
+ * How to define item title it is.
+ * 1. Current string is a paragraph between '\n \n' and '\n \n'.
+ * 2. First character is upper case character.
+ * 3. Next paragraph first character is digit.
+ * 4. Title sentence has no dot in the end. 
+ * 
+ * Exception Case:
+ * The Chairman welcome speech need to ignore.
+ * 
+ * @param {String} text The minute string.
+ */
+const extractItemOfMeeting = (text, minute) => {
+    let currentString = "";
+    let nextStartOfString = "";
+    let currentIndex = text.indexOf("\n \n");
+    let nextIndex = text.indexOf("\n \n", ++currentIndex);
+
+    for(let i = 0; ; i++){
+        currentString = text.substring(currentIndex, nextIndex);
+        nextStartOfString = text.substring(nextIndex + 3, nextIndex + 4);
+        
+        currentString = currentString.replace(/\n \n/g, "").replace(/\n/g, "").trim();
+
+        // Update index
+        currentIndex = nextIndex;
+        nextIndex = text.indexOf("\n \n", ++currentIndex);
+
+        if(currentString.indexOf("Chairman") != -1 && currentString.indexOf("welcomed") != -1 && currentString.indexOf("Members") != -1){
+            continue;
+        }
+
+        
+        if(isNaN(currentString.substring(0, 1)) && isAlphaAndUpperCase(currentString.substring(0, 1)) && !isNaN(nextStartOfString) && currentString.slice(-1) != "."){
+            let item = {
+                title: null,
+                content: null,
+            };
+
+            item.title = currentString;
+            minute.items.push(item);
+        }
+    
+        if(nextIndex == -1){
+            break;
+        }
+    }
+    
+}
+
+
+/**
+ * Return true if character is alpha and is upper case.
+ * @param {String} character The character to check.
+ */
+const isAlphaAndUpperCase = (character) => {
+    return /^[A-Z]$/i.test(character) && character == character.toUpperCase();
+}
+
+
 
 /**
  * Return the first digit in the string.
