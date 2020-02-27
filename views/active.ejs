@@ -79,58 +79,13 @@
                         <div class="input-group">
                             <input type="search" placeholder="Enter keywords or phrase" aria-describedby="advancedSearch" class="form-control">
                             <div class="input-group-append">
-                                <button id="advancedSearch" type="submit" class="btn btn-primary"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                <button id="Search" type="submit" class="btn btn-primary"><i class="fa fa-search" aria-hidden="true"></i></button>
                             </div>
                         </div>
                     </div>
                 </div>                
                 <div class="collapse" id="collapseExample">
-                    <div class="row mt-2">
-                        <div class="col">
-                            <h5>Category1</h5>
-                            <hr>
-                            <ul>
-                                <li>one</li>
-                                <li>two</li>
-                                <li>three</li>
-                            </ul>
-                        </div>
-                        <div class="col">
-                            <h5>Category2</h5>
-                            <hr>
-                            <ul>
-                                <li>one</li>
-                                <li>two</li>
-                                <li>three</li>
-                            </ul>
-                        </div>
-                        <div class="col">
-                            <h5>Category3</h5>
-                            <hr>
-                            <ul>
-                                <li>one</li>
-                                <li>two</li>
-                                <li>three</li>
-                            </ul>
-                        </div>
-                        <div class="col">
-                            <h5>Category4</h5>
-                            <hr>
-                            <ul>
-                                <li>one</li>
-                                <li>two</li>
-                                <li>three</li>
-                            </ul>
-                        </div>
-                        <div class="col">
-                            <h5>Category5</h5>
-                            <hr>
-                            <ul>
-                                <li>one</li>
-                                <li>two</li>
-                                <li>three</li>
-                            </ul>
-                        </div>
+                    <div class="row mt-2" id="resultList">                                      
                     </div>
                 </div>                                      
             </div>
@@ -194,6 +149,7 @@ if (!('webkitSpeechRecognition' in window)) {
         }        
     }
     function analysis() {
+        let resultList = [];
         let document ={
             content: analysisTranScript,
             type: 'PLAIN_TEXT'
@@ -209,9 +165,14 @@ if (!('webkitSpeechRecognition' in window)) {
         .then(res => {
             return res.json();
         }).then(result => {
-            console.log(result);
+            console.log(result)
+            for (let obj of result.entities){
+                    $("#resultList").append("<div class=" + "col" + "><h5>" + obj.type + "</h5><hr><ul><li><a href="+">" + obj.name + "</a></li></ul></div>")
+                
+            }
         })
     }
 }
+
 </script>
 </html>
