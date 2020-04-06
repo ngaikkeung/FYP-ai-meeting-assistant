@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const indexRouter = require('./routers/index');
 const uploadRouter = require('./routers/upload');
 const activeRouter = require('./routers/active');
+const webhookRouter = require('./routers/webhook');
 const errorRouter = require('./routers/error');
 
 // Set view engine
@@ -20,6 +21,7 @@ app.use(express.json());
 app.use('/', indexRouter);
 app.use('/active', activeRouter);
 app.use('/upload', uploadRouter);
+app.use('/webhook', webhookRouter);
 app.use('/*', errorRouter);
 
 app.listen(process.env.PORT, () => console.log(`app is running at port ${process.env.PORT}...`));

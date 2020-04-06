@@ -10,6 +10,7 @@ module.exports = class DB{
         let isConnected = false; 
 
         MongoClient.connect(url, {useNewUrlParser: true, useUnifiedTopology: true}, (err, db) => {
+            console.log("Connect mongo url: ", url)
             if(err){
                 console.log("MongoClient connect err! ", err);
             }else{
