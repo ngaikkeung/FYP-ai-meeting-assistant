@@ -33,13 +33,19 @@
        
         <div class="row">
 
-            <iframe
+            <!-- <iframe
                 allow="microphone;"
                 width="350"
                 height="430"
                 src="https://console.dialogflow.com/api-client/demo/embedded/20af93bb-e8a8-435a-adeb-f820b97cd8e1">
-            </iframe>
+            </iframe> -->
 
+            <df-messenger
+                intent="WELCOME"
+                chat-title="EMK"
+                agent-id="20af93bb-e8a8-435a-adeb-f820b97cd8e1"
+                language-code="en"
+            ></df-messenger>
 
            <!-- <div class="col" style="height: 600px;">
                 <div class="row">
@@ -106,84 +112,86 @@
 <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+<!-- Dialogflow Messenger JS -->
+<script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
 <script type="text/javascript">
-if (!('webkitSpeechRecognition' in window)) {
-    alert("Only support in Google Chrome latest version.");
-} else{
-    let finalTranScript = "";
-    let analysisTranScript;
-    let recognizing;
-    let recognition = new webkitSpeechRecognition();
-    recognition.continuous = true;
-    recognition.interimResults = true;
-    recognition.lang = 'en-US';
-    reset();
-    recognition.onend = reset();
-    recognition.onresult = (event) => {
-        let interimTranscript = "";
-        for (let i = event.resultIndex; i < event.results.length; ++i) {
-            if (event.results[i].isFinal) {
-                finalTranScript += event.results[i][0].transcript;
-            }else{
-                interimTranscript += event.results[i][0].transcript;
+    if (!('webkitSpeechRecognition' in window)) {
+        alert("Only support in Google Chrome latest version.");
+    }else{
+        let finalTranScript = "";
+        let analysisTranScript;
+        let recognizing;
+        let recognition = new webkitSpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = 'en-US';
+        reset();
+        recognition.onend = reset();
+        recognition.onresult = (event) => {
+            let interimTranscript = "";
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                if (event.results[i].isFinal) {
+                    finalTranScript += event.results[i][0].transcript;
+                }else{
+                    interimTranscript += event.results[i][0].transcript;
+                }
+                $('#finalTranscript').text(finalTranScript);
+                $('#interimTranscript').text(interimTranscript);
             }
-            $('#finalTranscript').text(finalTranScript);
-            $('#interimTranscript').text(interimTranscript);
+        }
+        recognition.onerror = (event) => {
+            console.log("ERROR : ", event.error);
+        };
+        recognition.onend = (event) => {
+            console.log("event", event);
+        }
+        function reset() {
+            recognizing = false;
+            finalTranScript = "";
+            $('#speakBtn').text('Click to Speak');
+        }
+        function start() {
+            recognition.start();
+            recognizing = true;
+            $('#speakBtn').text('Click to Stop');
+            console.log("is recognizing: ", recognizing);
+        }
+        function toggleStartStop() {
+            if (recognizing) {             
+                recognition.stop();
+                // analysisTranScript = document.getElementById('interimTranscript').textContent;
+                analysisTranScript =  $('#finalTranscript').text();
+                analysis();
+                reset();
+                console.log("is recognizing: ", recognizing);
+                console.log("analysisTranScript: ", analysisTranScript);             
+            }        
+        }
+        function analysis() {
+            let resultList = [];
+            let document ={
+                content: analysisTranScript,
+                type: 'PLAIN_TEXT'
+            };
+            console.log(document);
+            fetch('/active/analysis', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({document: document })
+            })
+            .then(res => {
+                return res.json();
+            }).then(result => {
+                console.log(result)
+                for (let obj of result.entities){
+                        $("#resultList").append("<div class=" + "col" + "><h5>" + obj.type + "</h5><hr><ul><li><a href="+">" + obj.name + "</a></li></ul></div>")
+                    
+                }
+            })
         }
     }
-    recognition.onerror = (event) => {
-        console.log("ERROR : ", event.error);
-    };
-    recognition.onend = (event) => {
-        console.log("event", event);
-    }
-    function reset() {
-        recognizing = false;
-        finalTranScript = "";
-        $('#speakBtn').text('Click to Speak');
-    }
-    function start() {
-        recognition.start();
-        recognizing = true;
-        $('#speakBtn').text('Click to Stop');
-        console.log("is recognizing: ", recognizing);
-    }
-    function toggleStartStop() {
-        if (recognizing) {             
-            recognition.stop();
-            // analysisTranScript = document.getElementById('interimTranscript').textContent;
-            analysisTranScript =  $('#finalTranscript').text();
-            analysis();
-            reset();
-            console.log("is recognizing: ", recognizing);
-            console.log("analysisTranScript: ", analysisTranScript);             
-        }        
-    }
-    function analysis() {
-        let resultList = [];
-        let document ={
-            content: analysisTranScript,
-            type: 'PLAIN_TEXT'
-        };
-        console.log(document);
-        fetch('/active/analysis', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({document: document })
-        })
-        .then(res => {
-            return res.json();
-        }).then(result => {
-            console.log(result)
-            for (let obj of result.entities){
-                    $("#resultList").append("<div class=" + "col" + "><h5>" + obj.type + "</h5><hr><ul><li><a href="+">" + obj.name + "</a></li></ul></div>")
-                
-            }
-        })
-    }
-}
 
 </script>
 </html>

@@ -8,13 +8,13 @@ exports.handle = (req, res) => {
     let payload = {
         "dateTime": [],
         "time": req.body.queryResult.parameters.Time,
+        "dateTime": req.body.queryResult.parameters["date-time"],
         "any": req.body.queryResult.parameters.any,
         "number": req.body.queryResult.parameters.number,
         "datePeriod": req.body.queryResult.parameters["date-period"],
         "address": req.body.queryResult.parameters.address,
         "searchingAction": []
     }
-    payload.dateTime = req.body.queryResult.parameters["date-time"].length > 0 ? req.body.queryResult.parameters.date-time.slice() : [];
     payload.searchingAction = req.body.queryResult.parameters.searchingkeyword.length > 0 ? req.body.queryResult.parameters.searchingkeyword.slice() : [];
 
     DB.searchMinutes(payload, (err, items) => {
