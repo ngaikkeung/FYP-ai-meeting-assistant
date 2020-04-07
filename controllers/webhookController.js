@@ -1,7 +1,6 @@
 const DB = new (require('./databaseController.js'))();
 
 exports.handle = (req, res) => {
-    console.log("Incoming webhook POST requset: ", req.body)
     console.log("webhook parameter: ", req.body.queryResult.parameters);
     
     let response = "";
@@ -27,7 +26,7 @@ exports.handle = (req, res) => {
     response += " Search action: " + searchingAction;
 
     webhookResponse = {
-        "fulfillmentMessages": "", // Default response from webhook.
+        "fulfillmentText": "", // Default response from webhook.
         "fulfillmentMessages": [
             {
                 "text": {
