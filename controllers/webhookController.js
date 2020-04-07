@@ -28,7 +28,7 @@ exports.handle = (req, res) => {
             response += " \n" + doc.title;
         }
 
-        return webhookResponse(response, res);
+        return webhookReply(response, res);
     })
 
     
