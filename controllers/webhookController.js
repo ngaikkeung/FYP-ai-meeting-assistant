@@ -27,8 +27,14 @@ exports.handle = (req, res) => {
         for(let doc of items){
             response += " \n" + doc.title;
         }
+
+        return webhookResponse(response, res);
     })
 
+    
+}
+
+const webhookReply = (response, res) => {
     // webhook response
     webhookResponse = {
         "fulfillmentText": "", // Default response from webhook.
@@ -44,4 +50,3 @@ exports.handle = (req, res) => {
     console.log("Webhook response: ", JSON.stringify(webhookResponse));
     return res.json(webhookResponse)
 }
-
