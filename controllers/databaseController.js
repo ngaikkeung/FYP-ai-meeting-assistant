@@ -10,11 +10,10 @@ module.exports = class DB{
         let isConnected = false; 
 
         MongoClient.connect(url, {useNewUrlParser: true, useUnifiedTopology: true}, (err, db) => {
-            console.log("Connect mongo url: ", url)
             if(err){
                 console.log("MongoClient connect err! ", err);
             }else{
-                console.log("MongoClient connect Success! ");
+                // console.log("MongoClient connect Success! ");
                 isConnected = true;
                 database = db.db(dbName);
             }
@@ -57,6 +56,9 @@ module.exports = class DB{
             }
         }
         
+        this.searchMinutes = (payload, callback) => {
+            // TODO
+        }
     }
 }
 
