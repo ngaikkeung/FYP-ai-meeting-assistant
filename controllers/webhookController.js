@@ -16,21 +16,44 @@ exports.handle = (req, res) => {
     }
     payload.searchingAction = req.body.queryResult.parameters.searchingkeyword.length > 0 ? req.body.queryResult.parameters.searchingkeyword.slice() : [];
 
-    DB.searchMinutes(payload, (err, items) => {
-        if(err){
-            return response = "There are something wrong in database, please try later.";
-        }
-        if(items.length == 0){
-            return response = "There are no result, please search again with other keywords.";
-        }
-        for(let doc of items){
-            response += "\n" + doc.title;
-            response += "\n ..." + keywordsInDocumentContext(payload.any, doc) + " ...";
-            response += "\n";
-        }
 
-        return webhookReply(response, res);
-    })
+    // Depends on paramter number, search by different paramter
+    if(payload.any && !payload.time && !payload.dateTime && !payload.number && !payload.datePeriod && !payload.address){
+        DB.searchMinutesByAny(payload, (err, items) => {
+            if(err){
+                return response = "There are something wrong in database, please try later.";
+            }
+            if(items.length == 0){
+                return response = "There are no result, please search again with others.";
+            }
+            for(let doc of items){
+                response += "\n" + doc.title;
+                response += "\n" + keywordsInDocumentContext(payload.any, doc)
+                response += "\n";
+            }
+    
+            return webhookReply(response, res);
+        })
+    }else if(payload.any && payload.dateTime){
+        // Convert date to milliseconds;
+        payload.dateTime = new Date(payload.dateTime).getTime();
+        DB.searchMinutesByAnyAndDatetime(payload, (err, items) => {
+            if(err){
+                return response = "There are something wrong in database, please try later.";
+            }
+            if(items.length == 0){
+                return response = "There are no result, please search again with others.";
+            }
+            for(let doc of items){
+                response += "\n" + doc.title;
+                response += "\n" + keywordsInDocumentContext(payload.any, doc)
+                response += "\n";
+            }
+    
+            return webhookReply(response, res);
+        })
+    }
+    
 
     
 }
@@ -56,9 +79,10 @@ const keywordsInDocumentContext = (keyword, document) => {
     const PREFIX_OF_KEYWORD = 20;
     const SUFFIX_OF_KEYWORD = keyword.length + 20;
     let context = "";
-    let positionOfKeyword = document.content.search(keyword);
+    let positionOfKeyword = document.content.search(trimChar(keyword, '"'));
     let substringStartIndex = 0;
 
+    // Prepare the context of keywords
     if(positionOfKeyword != -1){
         if(positionOfKeyword - PREFIX_OF_KEYWORD > 0){
             substringStartIndex = positionOfKeyword - PREFIX_OF_KEYWORD;
@@ -66,5 +90,22 @@ const keywordsInDocumentContext = (keyword, document) => {
         context = document.content.substring(substringStartIndex, positionOfKeyword + SUFFIX_OF_KEYWORD);
     }
     
+    // Prepare the output showing
+    if(content != ''){
+        context = " ..." + context + " ...";
+    }
+
     return context;
+}
+
+const trimChar = (string, charToRemove) => {
+    if(string.charAt(0) == charToRemove) {
+        string = string.substring(1);
+    }
+
+    if(string.charAt(string.length - 1) == charToRemove) {
+        string = string.substring(0, string.length - 1);
+    }
+
+    return string;
 }
