@@ -54,7 +54,7 @@ const webhookReply = (response, res) => {
 const keywordsInDocumentContext = (keyword, document) => {
     const PREFIX_OF_KEYWORD = SUFFIX_OF_KEYWORD = 20;
     let context = "";
-    let positionOfKeyword = document.search(keyword);
+    let positionOfKeyword = document.content.search(keyword);
     let substringStartIndex = 0;
 
     if(positionOfKeyword != -1){
