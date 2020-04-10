@@ -106,6 +106,6 @@ const trimChar = (string, charToRemove) => {
     if(string.charAt(string.length - 1) == charToRemove) {
         string = string.substring(0, string.length - 1);
     }
-
-    return string;
+    
+    return string.toLowerCase();
 }
