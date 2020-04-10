@@ -24,8 +24,9 @@ exports.handle = (req, res) => {
             return response = "There are no result, please search again with other keywords.";
         }
         for(let doc of items){
-            response += " \n" + doc.title;
-            response += keywordsInDocumentContext(payload.any, doc);
+            response += "\n" + doc.title;
+            response += "\n ..." + keywordsInDocumentContext(payload.any, doc) + " ...";
+            response += "\n";
         }
 
         return webhookReply(response, res);
@@ -52,7 +53,8 @@ const webhookReply = (response, res) => {
 }
 
 const keywordsInDocumentContext = (keyword, document) => {
-    const PREFIX_OF_KEYWORD = SUFFIX_OF_KEYWORD = 20;
+    const PREFIX_OF_KEYWORD = 20;
+    const SUFFIX_OF_KEYWORD = keyword.length + 20;
     let context = "";
     let positionOfKeyword = document.content.search(keyword);
     let substringStartIndex = 0;
