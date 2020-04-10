@@ -61,7 +61,7 @@ const keywordsInDocumentContext = (keyword, document) => {
         if(positionOfKeyword - PREFIX_OF_KEYWORD > 0){
             substringStartIndex = positionOfKeyword - PREFIX_OF_KEYWORD;
         }
-        context = document.substring(substringStartIndex, positionOfKeyword + SUFFIX_OF_KEYWORD);
+        context = document.content.substring(substringStartIndex, positionOfKeyword + SUFFIX_OF_KEYWORD);
     }
     
     return context;
