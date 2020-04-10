@@ -61,7 +61,7 @@ module.exports = class DB{
                 $text: { 
                     $search: payload.any 
                 }
-                } 
+            } 
 
             return database.collection("minutes").find(search).toArray((error, items) => {
                 callback(error, items);

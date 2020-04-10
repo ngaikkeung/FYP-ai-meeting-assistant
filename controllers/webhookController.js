@@ -4,7 +4,6 @@ exports.handle = (req, res) => {
     console.log("webhook parameter: ", req.body.queryResult.parameters);
     
     let response = "";
-    let webhookResponse;
     let payload = {
         "dateTime": [],
         "time": req.body.queryResult.parameters.Time,
@@ -26,6 +25,7 @@ exports.handle = (req, res) => {
         }
         for(let doc of items){
             response += " \n" + doc.title;
+            response += keywordsInDocumentContext(payload.any, doc);
         }
 
         return webhookReply(response, res);
@@ -49,4 +49,20 @@ const webhookReply = (response, res) => {
 
     console.log("Webhook response: ", JSON.stringify(webhookResponse));
     return res.json(webhookResponse)
+}
+
+const keywordsInDocumentContext = (keyword, document) => {
+    const PREFIX_OF_KEYWORD = SUFFIX_OF_KEYWORD = 20;
+    let context = "";
+    let positionOfKeyword = document.search(keyword);
+    let substringStartIndex = 0;
+
+    if(positionOfKeyword != -1){
+        if(positionOfKeyword - PREFIX_OF_KEYWORD > 0){
+            substringStartIndex = positionOfKeyword - PREFIX_OF_KEYWORD;
+        }
+        context = document.substring(substringStartIndex, positionOfKeyword + SUFFIX_OF_KEYWORD);
+    }
+    
+    return context;
 }
