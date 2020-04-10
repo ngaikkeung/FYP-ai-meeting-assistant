@@ -91,7 +91,7 @@ const keywordsInDocumentContext = (keyword, document) => {
     }
     
     // Prepare the output showing
-    if(content != ''){
+    if(context != ''){
         context = " ..." + context + " ...";
     }
 
