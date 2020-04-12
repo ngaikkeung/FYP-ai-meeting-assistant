@@ -38,9 +38,8 @@ exports.postUpload = (req, res) => {
         pdf(dataBuffer).then(function(data) {
             // PDF text
             pdfData = data.text;
-            pdfBasicInfoPartText = pdfData.substring(pdfData.indexOf("Minutes"), pdfData.indexOf("Present"));
-            // endPartOfText = pdfData.substring(pdfData.indexOf("*")).replace(/\n \n/g, "").replace(/\n/g, "");
-            endPartOfText = pdfData.substring(pdfData.indexOf("*"));
+            pdfBasicInfoPartText = pdfData.substring(pdfData.indexOf("Minutes"), pdfData.indexOf("Present")).replace(/ +/g, " ");
+            endPartOfText = pdfData.substring(pdfData.indexOf("*")).replace(/ +/g, " ");
             minute.content = endPartOfText.replace(/\n \n/g, "").replace(/\n/g, "");
             extractBasicInforOfMeeting(pdfBasicInfoPartText, minute);
             extractItemOfMeeting(endPartOfText, minute)
@@ -66,6 +65,7 @@ exports.postUpload = (req, res) => {
 /**
  * Extract the basic information from a parsed text minute.
  * @param {String} text The parsed text data from pdf file.
+ * @param {Object} minute The minute object to store the processed data.
  */
 const extractBasicInforOfMeeting = (text, minute) => {
     let title = text.substring(text.indexOf("Minutes"), text.indexOf("Date:")).trim().replace(/\r?\n|\r/g, "");
@@ -93,6 +93,7 @@ const extractBasicInforOfMeeting = (text, minute) => {
  * The Chairman welcome speech need to ignore.
  * 
  * @param {String} text The minute string.
+ * @param {Object} minute The minute object to store the processed data.
  */
 const extractItemOfMeeting = (text, minute) => {
     let currentString = "";
