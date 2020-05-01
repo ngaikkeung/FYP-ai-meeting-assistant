@@ -82,7 +82,7 @@ const trimChar = (string, charToRemove) => {
 
 
 const keywordSearchHandler = (queryResult, httpResponse) => {
-    let keyword = queryResult.any ? queryResult.any : "";
+    let keyword = queryResult.parameters.any ? queryResult.parameters.any : "";
     let textResponse = ""
 
     if(keyword){
