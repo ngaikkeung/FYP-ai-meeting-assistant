@@ -136,7 +136,7 @@ const numberingSearchHandler = (queryResult, httpResponse) => {
 }
 
 const periodSearchHandler = (queryResult, httpResponse) => {
-    let period = !isEmptyObject(queryResult.date-period) ?  queryResult.date-period : null; 
+    let period = !isEmptyObject(queryResult["date-period"]) ?  queryResult["date-period"] : null; 
     let textResponse = ""
 
     if(period){
