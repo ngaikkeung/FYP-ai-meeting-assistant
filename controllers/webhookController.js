@@ -81,7 +81,7 @@ const trimChar = (string, charToRemove) => {
     return string;
 }
 
-const isEmptyObject = (object) => {
+const isEmptyObject = (obj) => {
     return Object.keys(obj).length === 0;
 }
 
