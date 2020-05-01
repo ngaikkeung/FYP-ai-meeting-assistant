@@ -56,10 +56,10 @@ module.exports = class DB{
             }
         }
         
-        this.searchMinutesByAny = (payload, callback) => {
+        this.searchMinutesByAnyKeyword = (any, callback) => {
             let search = { 
                 $text: { 
-                    $search: payload.any 
+                    $search: any 
                 }
             } 
 
@@ -68,22 +68,6 @@ module.exports = class DB{
             })
         }
 
-        this.searchMinutesByAnyAndDatetime = (payload, callback) => {
-            let search = { 
-                "$text" : { 
-                    "$search" : payload.any 
-                }
-            } 
-            let time = {
-                "date" : {
-                    "$lt" : payload.dateTime,
-                }
-            }
-
-            return database.collection("minutes").find(search, time).toArray((error, items) => {
-                callback(error, items);
-            })
-        }
     }
 }
 

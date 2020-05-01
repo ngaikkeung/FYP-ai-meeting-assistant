@@ -1,78 +1,44 @@
 const DB = new (require('./databaseController.js'))();
 
 exports.handle = (req, res) => {
-    console.log("webhook parameter: ", req.body.queryResult.parameters);
-    
-    let response = "";
-    let payload = {
-        "dateTime": [],
-        "time": req.body.queryResult.parameters.Time,
-        "dateTime": req.body.queryResult.parameters["date-time"],
-        "any": req.body.queryResult.parameters.any,
-        "number": req.body.queryResult.parameters.number,
-        "datePeriod": req.body.queryResult.parameters["date-period"],
-        "address": req.body.queryResult.parameters.address,
-        "searchingAction": []
-    }
-    payload.searchingAction = req.body.queryResult.parameters.searchingkeyword.length > 0 ? req.body.queryResult.parameters.searchingkeyword.slice() : [];
+    console.log("webhook query result: ", req.body.queryResult);
 
+    const intent = req.body.queryResult.intent.displayName
+    const queryResult = req.body.queryResult
 
-    // Depends on paramter number, search by different paramter
-    if(payload.any && !payload.time && !payload.dateTime && !payload.number && !payload.datePeriod && !payload.address){
-        DB.searchMinutesByAny(payload, (err, items) => {
-            if(err){
-                return response = "There are something wrong in database, please try later.";
-            }
-            if(items.length == 0){
-                return response = "There are no result, please search again with others.";
-            }
-            for(let doc of items){
-                response += "\n" + doc.title;
-                response += "\n" + keywordsInDocumentContext(payload.any, doc)
-                response += "\n";
-            }
-    
-            return webhookReply(response, res);
-        })
-    }else if(payload.any && payload.dateTime){
-        // Convert date to milliseconds;
-        payload.dateTime = new Date(payload.dateTime).getTime();
-        DB.searchMinutesByAnyAndDatetime(payload, (err, items) => {
-            if(err){
-                return response = "There are something wrong in database, please try later.";
-            }
-            if(items.length == 0){
-                return response = "There are no result, please search again with others.";
-            }
-            for(let doc of items){
-                response += "\n" + doc.title;
-                response += "\n" + keywordsInDocumentContext(payload.any, doc)
-                response += "\n";
-            }
-    
-            return webhookReply(response, res);
-        })
+    /** Handle by different intent */
+    switch(intent){
+        case 'keywordSearch':
+            keywordSearchHandler(queryResult, res);
+            break;
+        case 'locationSearch':
+            break;
+        case 'numberingSearch':
+            break;
+        case 'periodSearch':
+            break;
+        case 'dateSearch':
+            break;
     }
-    
 
     
 }
 
-const webhookReply = (response, res) => {
+const webhookReply = (responseText, httpResponse) => {
     // webhook response
     webhookResponse = {
         "fulfillmentText": "", // Default response from webhook.
         "fulfillmentMessages": [
             {
                 "text": {
-                    "text": [response]
+                    "text": [responseText]
                 }
             }
         ]
     };
 
     console.log("Webhook response: ", JSON.stringify(webhookResponse));
-    return res.json(webhookResponse)
+    return httpResponse.json(webhookResponse)
 }
 
 const keywordsInDocumentContext = (keyword, document) => {
@@ -93,6 +59,8 @@ const keywordsInDocumentContext = (keyword, document) => {
     // Prepare the output showing
     if(context != ''){
         context = " ..." + context + " ...";
+    }else{
+        context = "Not found keyword context in document : " + document.title
     }
 
     return context;
@@ -107,5 +75,32 @@ const trimChar = (string, charToRemove) => {
         string = string.substring(0, string.length - 1);
     }
     
-    return string.toLowerCase();
+    return string;
+}
+
+/** Intent handler */
+
+
+const keywordSearchHandler = (queryResult, httpResponse) => {
+    let keyword = queryResult.any ? queryResult.any : "";
+    let textResponse = ""
+
+    if(keyword){
+        DB.searchMinutesByAnyKeyword(keyword, (err, results) => {
+            if(err){
+                return textResponse = "The are error occur in database."
+            }
+            if(results.length == 0){
+                return textResponse = "There are no result, please search again."
+            }
+
+            for(let result of results){
+                textResponse += "\n" + result.title
+                textResponse += "\n" + keywordsInDocumentContext(keyword, result)
+                textResponse += "\n"
+            }
+
+            return webhookReply(textResponse, httpResponse)
+        })
+    }
 }
