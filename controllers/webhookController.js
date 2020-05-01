@@ -12,10 +12,13 @@ exports.handle = (req, res) => {
             keywordSearchHandler(queryResult, res);
             break;
         case 'locationSearch':
+            keywordSearchHandler(queryResult, res)
             break;
         case 'numberingSearch':
+            numberingSearchHandler(queryResult, res)
             break;
         case 'periodSearch':
+            periodSearchHandler(queryResult, res)
             break;
         case 'dateSearch':
             break;
@@ -60,7 +63,7 @@ const keywordsInDocumentContext = (keyword, document) => {
     if(context != ''){
         context = " ..." + context + " ...";
     }else{
-        context = "Not found keyword context in document : " + document.title
+        context = "Not found keyword context in document."
     }
 
     return context;
@@ -78,8 +81,11 @@ const trimChar = (string, charToRemove) => {
     return string;
 }
 
-/** Intent handler */
+const isEmptyObject = (object) => {
+    return Object.keys(obj).length === 0;
+}
 
+/** Intent handler */
 
 const keywordSearchHandler = (queryResult, httpResponse) => {
     let keyword = queryResult.parameters.any ? queryResult.parameters.any : "";
@@ -95,8 +101,58 @@ const keywordSearchHandler = (queryResult, httpResponse) => {
             }
 
             for(let result of results){
-                textResponse += "\n" + result.title
+                textResponse += result.title
                 textResponse += "\n" + keywordsInDocumentContext(keyword, result)
+                textResponse += "\n"
+            }
+
+            return webhookReply(textResponse, httpResponse)
+        })
+    }
+}
+
+const numberingSearchHandler = (queryResult, httpResponse) => {
+    let keyword = queryResult.parameters.any ? queryResult.parameters.any : "";
+    let textResponse = ""
+
+    if(keyword){
+        DB.searchMinutesByAnyKeyword(keyword, (err, results) => {
+            if(err){
+                return textResponse = "The are error occur in database."
+            }
+            if(results.length == 0){
+                return textResponse = "There are no result, please search again."
+            }
+
+            for(let result of results){
+                textResponse += result.title
+                textResponse += "\n" + keywordsInDocumentContext(keyword, result)
+                textResponse += "\n"
+            }
+
+            return webhookReply(textResponse, httpResponse)
+        })
+    }
+}
+
+const periodSearchHandler = (queryResult, httpResponse) => {
+    let period = !isEmptyObject(queryResult.date-period) ?  queryResult.date-period : null; 
+    let textResponse = ""
+
+    if(period){
+        DB.searchMinutesByPeiod(period, (err, results) => {
+            if(err){
+                return textResponse = "The are error occur in database."
+            }
+            if(results.length == 0){
+                return textResponse = "There are no result, please search again."
+            }
+
+            for(let result of results){
+                let minuteDate = `${new Date(result.date).getDate()}-${new Date(result.date).getMonth() + 1}-${new Date(result.date).getFullYear()}`
+
+                textResponse += result.title
+                textResponse += `\n Date: ${minuteDate}` 
                 textResponse += "\n"
             }
 

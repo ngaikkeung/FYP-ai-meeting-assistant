@@ -63,6 +63,19 @@ module.exports = class DB{
                 }
             } 
 
+            return database.collection("minutes").find(search).sort( { score: { $meta: "textScore" } } ).toArray((error, items) => {
+                callback(error, items);
+            })
+        }
+
+        this.searchMinutesByPeiod = (period, callback) => {
+            let search = { 
+               date: {
+                   $gte: new Date(period.startDate).getTime(),
+                   $lte: new Date(period.endDate).getTime()
+               }
+            } 
+
             return database.collection("minutes").find(search).toArray((error, items) => {
                 callback(error, items);
             })
