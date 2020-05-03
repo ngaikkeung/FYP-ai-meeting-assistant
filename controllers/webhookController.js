@@ -46,9 +46,20 @@ const webhookReply = (responseText, httpResponse) => {
     return httpResponse.json(webhookResponse)
 }
 
-const webhookReplyToTriggerIntent = (eventName, httpResponse) => {
+const webhookReplyToTriggerIntent = (eventName, parameters, httpResponse) => {
     // webhook response
     webhookResponse = {
+        "parameters": {
+            "keyword": parameters.keyword,
+        },
+        "fulfillmentText": "Default text response",
+        "fulfillmentMessages": [
+            {
+                "text": {
+                    "text": responseText
+                }
+            }
+        ],
         "followupEventInput" : {
             "name" : eventName
         }
@@ -103,6 +114,9 @@ const isEmptyObject = (obj) => {
 
 const keywordSearchHandler = (queryResult, httpResponse) => {
     let keyword = queryResult.parameters.keyword ? queryResult.parameters.keyword : "";
+    let parameters = {
+        keyword: keyword
+    }
     let textResponse = ""
 
     if(keyword){
@@ -112,7 +126,7 @@ const keywordSearchHandler = (queryResult, httpResponse) => {
             }
             if(results.length == 0){
                 // return webhookReply("There are no result, please search again.", httpResponse)
-                return webhookReplyToTriggerIntent('KeywordSearch-NoResult', httpResponse)
+                return webhookReplyToTriggerIntent('KeywordSearch-NoResult', parameters , httpResponse)
             }
 
             for(let result of results){
