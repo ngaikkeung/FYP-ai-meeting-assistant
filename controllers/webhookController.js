@@ -96,10 +96,10 @@ const keywordSearchHandler = (queryResult, httpResponse) => {
     if(keyword){
         DB.searchMinutesByAnyKeyword(keyword, (err, results) => {
             if(err){
-                return textResponse = "The are error occur in database."
+                return webhookReply("The are error occur in database.", httpResponse)
             }
             if(results.length == 0){
-                return textResponse = "There are no result, please search again."
+                return webhookReply("There are no result, please search again.", httpResponse)
             }
 
             for(let result of results){
@@ -147,10 +147,10 @@ const periodSearchHandler = (queryResult, httpResponse) => {
     if(period){
         DB.searchMinutesByPeiod(period, (err, results) => {
             if(err){
-                return textResponse = "The are error occur in database."
+                return webhookReply("The are error occur in database.", httpResponse)
             }
             if(results.length == 0){
-                return textResponse = "There are no result, please search again."
+                return webhookReply("There are no result, please search again.", httpResponse)
             }
 
             for(let result of results){
