@@ -49,11 +49,11 @@ const webhookReply = (responseText, httpResponse) => {
 const webhookReplyToTriggerIntent = (eventName, parameters, httpResponse) => {
     // webhook response
     webhookResponse = {
-        "parameters": {
-            "keyword": parameters.keyword,
-        },
         "followupEventInput" : {
-            "name" : eventName
+            "name" : eventName,
+            "parameters": {
+                "keyword": parameters.keyword,
+              }
         }
     };
 
