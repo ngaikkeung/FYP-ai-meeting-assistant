@@ -1,10 +1,11 @@
 const DB = new (require('./databaseController.js'))();
 
 exports.handle = (req, res) => {
-    console.log("webhook query result: ", req.body.queryResult);
-
     const intent = req.body.queryResult.intent.displayName
     const queryResult = req.body.queryResult
+
+    console.log("webhook query result: ", req.body.queryResult);
+    console.log("Request intent: ", intent);
 
     /** Handle by different intent */
     switch(intent){
@@ -108,6 +109,8 @@ const keywordSearchHandler = (queryResult, httpResponse) => {
 
             return webhookReply(textResponse, httpResponse)
         })
+    }else{
+        return webhookReply("No keyword detect in keywordSearchHandler", httpResponse);
     }
 }
 
@@ -158,5 +161,7 @@ const periodSearchHandler = (queryResult, httpResponse) => {
 
             return webhookReply(textResponse, httpResponse)
         })
+    }else{
+        return webhookReply("No period detect in periodSearchHandler", httpResponse);
     }
 }

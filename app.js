@@ -24,4 +24,4 @@ app.use('/upload', uploadRouter);
 app.use('/webhook', webhookRouter);
 app.use('/*', errorRouter);
 
-app.listen(process.env.PORT, () => console.log(`app is running at port ${process.env.PORT}...`));
+app.listen(process.env.PORT, () => console.log(`Listening on port ${process.env.PORT}`));
