@@ -175,8 +175,8 @@ const dateSearchHandler = (queryResult, httpResponse) => {
     if(dateTime){
         if(typeof dateTime == 'string'){
             dateTime = {
-                startDate = new Date(dateTime).getTime(),
-                endDate = new Date(dateTime).getTime()
+                startDate: new Date(dateTime).getTime(),
+                endDate: new Date(dateTime).getTime()
             }
         }
 
