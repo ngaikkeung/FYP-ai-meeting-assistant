@@ -52,14 +52,6 @@ const webhookReplyToTriggerIntent = (eventName, parameters, httpResponse) => {
         "parameters": {
             "keyword": parameters.keyword,
         },
-        "fulfillmentText": "Default text response",
-        "fulfillmentMessages": [
-            {
-                "text": {
-                    "text": responseText
-                }
-            }
-        ],
         "followupEventInput" : {
             "name" : eventName
         }
