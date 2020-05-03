@@ -46,6 +46,18 @@ const webhookReply = (responseText, httpResponse) => {
     return httpResponse.json(webhookResponse)
 }
 
+const webhookReplyToTriggerIntent = (eventName, httpResponse) => {
+    // webhook response
+    webhookResponse = {
+        "followupEventInput" : {
+            "name" : eventName
+        }
+    };
+
+    console.log("Webhook response: ", JSON.stringify(webhookResponse));
+    return httpResponse.json(webhookResponse)
+}
+
 const keywordsInDocumentContext = (keyword, document) => {
     const PREFIX_OF_KEYWORD = 20;
     const SUFFIX_OF_KEYWORD = keyword.length + 20;
@@ -99,7 +111,8 @@ const keywordSearchHandler = (queryResult, httpResponse) => {
                 return webhookReply(`The are error occur in database: ${err}`, httpResponse)
             }
             if(results.length == 0){
-                return webhookReply("There are no result, please search again.", httpResponse)
+                // return webhookReply("There are no result, please search again.", httpResponse)
+                return webhookReplyToTriggerIntent('KeywordSearch-NoResult', httpResponse)
             }
 
             for(let result of results){
