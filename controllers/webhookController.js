@@ -22,6 +22,7 @@ exports.handle = (req, res) => {
             periodSearchHandler(queryResult, res)
             break;
         case 'dateSearch':
+            dateSearchHandler(queryResult, res)
             break;
     }
 
@@ -89,7 +90,7 @@ const isEmptyObject = (obj) => {
 /** Intent handler */
 
 const keywordSearchHandler = (queryResult, httpResponse) => {
-    let keyword = queryResult.parameters.any ? queryResult.parameters.any : "";
+    let keyword = queryResult.parameters.keyword ? queryResult.parameters.keyword : "";
     let textResponse = ""
 
     if(keyword){
@@ -115,27 +116,28 @@ const keywordSearchHandler = (queryResult, httpResponse) => {
 }
 
 const numberingSearchHandler = (queryResult, httpResponse) => {
-    let keyword = queryResult.parameters.any ? queryResult.parameters.any : "";
-    let textResponse = ""
+    // let keyword = queryResult.parameters.any ? queryResult.parameters.any : "";
+    // let textResponse = ""
 
-    if(keyword){
-        DB.searchMinutesByAnyKeyword(keyword, (err, results) => {
-            if(err){
-                return textResponse = "The are error occur in database."
-            }
-            if(results.length == 0){
-                return textResponse = "There are no result, please search again."
-            }
+    // if(keyword){
+    //     DB.searchMinutesByAnyKeyword(keyword, (err, results) => {
+    //         if(err){
+    //             return textResponse = "The are error occur in database."
+    //         }
+    //         if(results.length == 0){
+    //             return textResponse = "There are no result, please search again."
+    //         }
 
-            for(let result of results){
-                textResponse += result.title
-                textResponse += "\n" + keywordsInDocumentContext(keyword, result)
-                textResponse += "\n"
-            }
+    //         for(let result of results){
+    //             textResponse += result.title
+    //             textResponse += "\n" + keywordsInDocumentContext(keyword, result)
+    //             textResponse += "\n"
+    //         }
 
-            return webhookReply(textResponse, httpResponse)
-        })
-    }
+    //         return webhookReply(textResponse, httpResponse)
+    //     })
+    // }
+    return webhookReply("TO DO...", httpResponse)
 }
 
 const periodSearchHandler = (queryResult, httpResponse) => {
@@ -163,5 +165,40 @@ const periodSearchHandler = (queryResult, httpResponse) => {
         })
     }else{
         return webhookReply("No period detect in periodSearchHandler", httpResponse);
+    }
+}
+
+const dateSearchHandler = (queryResult, httpResponse) => {
+    let dateTime = queryResult.parameters["date-time"] ? queryResult.parameters["date-time"] : "";
+    let textResponse = ""
+
+    if(dateTime){
+        if(typeof dateTime == 'string'){
+            dateTime = {
+                startDate = new Date(dateTime).getTime(),
+                endDate = new Date(dateTime).getTime()
+            }
+        }
+
+        DB.searchMinutesByPeiod(dateTime, (err, results) => {
+            if(err){
+                return textResponse = "The are error occur in database."
+            }
+            if(results.length == 0){
+                return textResponse = "There are no result, please search again."
+            }
+
+            for(let result of results){
+                let minuteDate = `${new Date(result.date).getDate()}-${new Date(result.date).getMonth() + 1}-${new Date(result.date).getFullYear()}`
+
+                textResponse += result.title
+                textResponse += `\n Date: ${minuteDate}` 
+                textResponse += "\n"
+            }
+
+            return webhookReply(textResponse, httpResponse)
+        })
+    }else{
+        return webhookReply("No date time detect in periodSearchHandler", httpResponse);
     }
 }
