@@ -151,7 +151,6 @@ const numberingSearchHandler = (queryResult, httpResponse) => {
 
         for(let result of results){
             textResponse += result.title
-            textResponse += "\n" + keywordsInDocumentContext(keyword, result)
             textResponse += "\n"
         }
 
