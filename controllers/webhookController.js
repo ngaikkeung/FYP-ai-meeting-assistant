@@ -118,8 +118,8 @@ const isEmptyObject = (obj) => {
 /** Intent handler */
 
 const keywordSearchHandler = (webhookReuqest, httpResponse) => {
-    const queryResult = webhookReuqest.body.queryResult
-    const sessions = webhookReuqest.body.session;
+    const queryResult = webhookReuqest.queryResult
+    const sessions = webhookReuqest.session;
     let keyword = queryResult.parameters.keyword ? queryResult.parameters.keyword : "";
     let parameters = {
         keyword: keyword
