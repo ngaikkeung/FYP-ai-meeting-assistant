@@ -117,11 +117,8 @@ module.exports = class DB{
                     }
                 ]
             }
-            let param = {
-                search,
-                period
-            }
-            return database.collection("minutes").find(param).project({ score: { $meta: "textScore" } }).sort( { score: { $meta: "textScore" } } ).toArray((error, items) => {
+           
+            return database.collection("minutes").find(search, period).project({ score: { $meta: "textScore" } }).sort( { score: { $meta: "textScore" } } ).toArray((error, items) => {
                 callback(error, items);
             })
         }
