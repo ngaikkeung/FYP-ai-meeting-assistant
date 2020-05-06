@@ -33,14 +33,16 @@ exports.handle = (req, res) => {
             break;
         case 'keyword-dateSearch':
             keywordDatedSearchHandler(queryResult, res)
-        // case ''
+        case 'tooMuch - yes':
+            yesHandler(queryResult, res);
+        case 'tooMuch - no':
             break;
     }
 
     
 }
 
-const webhookReply = (sessions, responseText, httpResponse) => {
+const webhookReply = (responseText, httpResponse) => {
     // webhook response
     webhookResponse = {
         "fulfillmentText": "", // Default response from webhook.
@@ -169,7 +171,7 @@ const keywordSearchHandler = (webhookReuqest, httpResponse) => {
             }
             if(results.length > 1){
                 textResponse = "Do you want to narrow down result?"
-                updateConext('keywordSearch', keyword, results.length, queryResult.queryText, textResponse)
+                updateConext('keywordSearch', {keyword: keyword}, results.length, queryResult.queryText, textResponse)
                 return webhookReply(sessions, textResponse, httpResponse)
             }
 
@@ -376,4 +378,13 @@ const keywordDatedSearchHandler = (queryResult, httpResponse) => {
     }else{
         return webhookReply("No keyword detect in keywordDateSearchHandler", httpResponse);
     }
+}
+
+const yesHandler = (queryResult, res) => {
+    let intent = 'tooMuch - yes';
+    let userResponse = queryResult.queryText;
+    let backendResponse = 'Please enter another keyword(s) for narrow down search.'
+
+    updateConext(intent, {answer: 'yes'}, null , userResponse, backendResponse)
+    return webhookReply(backendResponse, res)
 }
