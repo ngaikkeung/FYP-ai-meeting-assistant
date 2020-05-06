@@ -52,16 +52,7 @@ const webhookReply = (responseText, httpResponse) => {
                     "text": [responseText]
                 }
             }
-        ],
-        // "outputContexts": [
-        //     {
-        //         "name": `${sessions}/contexts/${intent}-history`,
-        //         "lifespanCount": 5,
-        //         "parameters": {
-        //           "test-param": "test-value"
-        //         }
-        //     }
-        // ]
+        ]
     };
 
     console.log("Webhook response: ", JSON.stringify(webhookResponse));
@@ -172,7 +163,7 @@ const keywordSearchHandler = (webhookReuqest, httpResponse) => {
             if(results.length > 1){
                 textResponse = "Do you want to narrow down result?"
                 updateConext('keywordSearch', {keyword: keyword}, results.length, queryResult.queryText, textResponse)
-                return webhookReply(sessions, textResponse, httpResponse)
+                return webhookReply(textResponse, httpResponse)
             }
 
             return webhookReply(textResponse, httpResponse)
@@ -380,11 +371,11 @@ const keywordDatedSearchHandler = (queryResult, httpResponse) => {
     }
 }
 
-const yesHandler = (queryResult, res) => {
+const yesHandler = (queryResult, httpResponse) => {
     let intent = 'tooMuch - yes';
     let userResponse = queryResult.queryText;
     let backendResponse = 'Please enter another keyword(s) for narrow down search.'
 
     updateConext(intent, {answer: 'yes'}, null , userResponse, backendResponse)
-    return webhookReply(backendResponse, res)
+    return webhookReply(backendResponse, httpResponse)
 }
