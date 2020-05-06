@@ -9,7 +9,7 @@ exports.handle = (req, res) => {
     /** Handle by different intent */
     switch(intent){
         case 'keywordSearch':
-            keywordSearchHandler(req.body.queryResult, res);
+            keywordSearchHandler(req.body, res);
             break;
         case 'locationSearch':
             addressSearchHandler(queryResult, res)
