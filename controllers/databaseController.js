@@ -122,6 +122,42 @@ module.exports = class DB{
                 callback(error, items);
             })
         }
+
+        this.searchMinutesByKeywordLocation = (payload, callback) => {
+            let aggregate = [
+                {
+                    $match: {
+                        $text: {
+                            $search: payload[0]
+                        }
+                    }
+                },
+                { 
+                    $addFields: { 
+                        results: { 
+                            $regexMatch: { 
+                                input: "$content", 
+                                regex: `/${payload[1]}/i`
+                            }  
+                        } 
+                    } 
+                }, 
+                {
+                    $match: {
+                        results: true
+                    }
+                },
+                {
+                    $project: {
+                        results: 0
+                    }
+                }
+            ];
+
+            return database.collection("minutes").aggregate(aggregate).toArray((error, items) => {
+                callback(error, items);
+            })
+        }
     }
 }
 

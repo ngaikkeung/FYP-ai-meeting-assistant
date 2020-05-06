@@ -28,14 +28,18 @@ exports.handle = (req, res) => {
             break;
         case 'dateSearch':
             dateSearchHandler(queryResult, res)
+            break;
         case 'keyword-periodSearch': 
             keywordPeriodSearchHandler(queryResult, res)
             break;
         case 'keyword-dateSearch':
             keywordDatedSearchHandler(queryResult, res)
+            break;
         case 'tooMuch - yes':
             yesHandler(queryResult, res);
+            break;
         case 'tooMuch - no':
+            noHandler(queryResult, res)
             break;
     }
 
@@ -376,6 +380,61 @@ const yesHandler = (queryResult, httpResponse) => {
     let userResponse = queryResult.queryText;
     let backendResponse = 'Please enter another keyword(s) for narrow down search.'
 
-    updateConext(intent, {answer: 'yes'}, null , userResponse, backendResponse)
+    updateConext(intent, null, null , userResponse, backendResponse)
+
     return webhookReply(backendResponse, httpResponse)
+}
+
+const noHandler = (queryResult, httpResponse) => {
+    let intents = [];
+
+    for(let i = contexts.length - 1; i >= 0; i--){
+        if(intents.length == 2) 
+            break;
+        if(contexts[i].parameters){
+            let intent = {
+                intnet: contexts[i].intent,
+                parameters: contexts[i].parameters
+            }
+            intents.push(intent);
+        }
+    }
+
+    switch(intents[0].intent){
+        case 'keywordSearch':
+            switch(intents[1].intent){
+                case 'locationSearch':
+                    payload = [];
+                    payload.push(intents[0].parameters.keyword)
+                    payload.push(intents[1].parameters.address)
+
+                    DB.searchMinutesByKeywordLocation(payload, (err, results) => {
+                        if(err){
+                            return webhookReply(`The are error occur in database: ${err}`, httpResponse)
+                        }
+                        if(results.length == 0){
+                            return webhookReply("There are no result, please search again.", httpResponse)
+                            // return webhookReplyToTriggerIntent('KeywordSearch-NoResult', parameters , httpResponse)
+                        }
+            
+                        for(let result of results){
+                            textResponse += result.title
+                            textResponse += "\n" + keywordsInDocumentContext(keyword, result)
+                            textResponse += "\n"
+                        }
+            
+                        return webhookReply(textResponse, httpResponse)
+                    })
+                    break;
+                case 'dateSearch':
+                case 'periodSearch':
+                    return webhookReply("TO DO", httpResponse)
+            }
+            break;
+        case 'locationSearch':
+
+        return webhookReply("TO DO", httpResponse)
+    }
+    
+    
 }
