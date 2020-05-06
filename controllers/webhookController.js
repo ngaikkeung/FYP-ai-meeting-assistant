@@ -1,5 +1,11 @@
 const DB = new (require('./databaseController.js'))();
 
+let contexts = []
+
+exports.getContexts = (req, res) => {
+    return res.json(contexts)
+}
+
 exports.handle = (req, res) => {
     const intent = req.body.queryResult.intent.displayName
     const queryResult = req.body.queryResult
@@ -27,6 +33,7 @@ exports.handle = (req, res) => {
             break;
         case 'keyword-dateSearch':
             keywordDatedSearchHandler(queryResult, res)
+        // case ''
             break;
     }
 
@@ -46,7 +53,7 @@ const webhookReply = (sessions , responseText, httpResponse) => {
         ],
         "outputContexts": [
             {
-                "name": `${sessions}/contexts/context-from-anykeyword-search`,
+                "name": `${sessions}/contexts/`,
                 "lifespanCount": 5,
                 "parameters": {
                   "test-param": "test-value"
@@ -115,6 +122,24 @@ const isEmptyObject = (obj) => {
     return Object.keys(obj).length === 0;
 }
 
+const updateConext = (intent, searchKeyword, queryResult, userResponse, backendResponse) => {
+    let contextData = {
+        intent: null,
+        searchKeyword: [],
+        queryResult: null,
+        userResponse: null,
+        backendResponse: null,
+    };
+
+    contextData.intent = intent;
+    contextData.searchKeyword = contextData.searchKeyword.push(searchKeyword);
+    contextData.queryResult = queryResult;
+    contextData.userResponse = userResponse;
+    contextData.backendResponse = backendResponse;
+
+    contexts.push(contextData)
+}
+
 /** Intent handler */
 
 const keywordSearchHandler = (webhookReuqest, httpResponse) => {
@@ -135,16 +160,20 @@ const keywordSearchHandler = (webhookReuqest, httpResponse) => {
                 // return webhookReply("There are no result, please search again.", httpResponse)
                 return webhookReplyToTriggerIntent('KeywordSearch-NoResult', parameters , httpResponse)
             }
+            if(results.length == 1){
+                for(let result of results){
+                    textResponse += result.title
+                    textResponse += "\n" + keywordsInDocumentContext(keyword, result)
+                    textResponse += "\n"
+                }
+            }
+            if(results.length > 1){
+                textResponse = "Do you want to narrow down result?"
+                updateConext('keywordSearch', keyword, results.length, queryResult.queryText, textResponse)
+                return webhookReply(sessions, textResponse, httpResponse)
+            }
 
-            // for(let result of results){
-            //     textResponse += result.title
-            //     textResponse += "\n" + keywordsInDocumentContext(keyword, result)
-            //     textResponse += "\n"
-            // }
-            
-
-            // return webhookReply(textResponse, httpResponse)
-            return webhookReply(sessions, "Do you want to narrow down result?", httpResponse)
+            return webhookReply(textResponse, httpResponse)
         })
     }else{
         return webhookReply("No keyword detect in keywordSearchHandler", httpResponse);
