@@ -40,7 +40,7 @@ exports.handle = (req, res) => {
     
 }
 
-const webhookReply = (sessions , responseText, httpResponse) => {
+const webhookReply = (sessions, responseText, httpResponse) => {
     // webhook response
     webhookResponse = {
         "fulfillmentText": "", // Default response from webhook.
@@ -51,15 +51,15 @@ const webhookReply = (sessions , responseText, httpResponse) => {
                 }
             }
         ],
-        "outputContexts": [
-            {
-                "name": `${sessions}/contexts/`,
-                "lifespanCount": 5,
-                "parameters": {
-                  "test-param": "test-value"
-                }
-            }
-        ]
+        // "outputContexts": [
+        //     {
+        //         "name": `${sessions}/contexts/${intent}-history`,
+        //         "lifespanCount": 5,
+        //         "parameters": {
+        //           "test-param": "test-value"
+        //         }
+        //     }
+        // ]
     };
 
     console.log("Webhook response: ", JSON.stringify(webhookResponse));
@@ -122,20 +122,20 @@ const isEmptyObject = (obj) => {
     return Object.keys(obj).length === 0;
 }
 
-const updateConext = (intent, searchKeyword, queryResult, userResponse, backendResponse) => {
+const updateConext = (intent, parameters, queryResult, userResponse, backendResponse) => {
     let contextData = {
         intent: null,
-        searchKeyword: [],
+        parameters: null,
         queryResult: null,
         userResponse: null,
         backendResponse: null,
     };
 
     contextData.intent = intent;
-    contextData.searchKeyword = contextData.searchKeyword.push(searchKeyword);
     contextData.queryResult = queryResult;
     contextData.userResponse = userResponse;
     contextData.backendResponse = backendResponse;
+    contextData.parameters = parameters
 
     contexts.push(contextData)
 }
