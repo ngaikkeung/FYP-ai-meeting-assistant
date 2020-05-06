@@ -82,12 +82,12 @@ module.exports = class DB{
         }
 
         this.searchMinutesByNumberOfMeeting = (payload, callback) => {
-            if(payload.timeWord && !payload.limit){
+            if(payload.timeWord && !payload.number){
                 return database.collection("minutes").find({}).sort({numberOfMeeting: -1}).limit(1).toArray((error, items) => {
                     callback(error, items);
                 })
-            }else if(payload.timeWord && payload.limit){
-                return database.collection("minutes").find({}).sort({numberOfMeeting: -1}).limit(payload.limit).toArray((error, items) => {
+            }else if(payload.timeWord && payload.number){
+                return database.collection("minutes").find({}).sort({numberOfMeeting: -1}).limit(payload.number).toArray((error, items) => {
                     return callback(error, items);
                 })
             }else{
