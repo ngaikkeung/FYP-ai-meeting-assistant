@@ -135,28 +135,32 @@ const keywordSearchHandler = (queryResult, httpResponse) => {
 }
 
 const numberingSearchHandler = (queryResult, httpResponse) => {
-    // let keyword = queryResult.parameters.any ? queryResult.parameters.any : "";
-    // let textResponse = ""
+    let payload = {
+        timeWord: queryResult.parameters.time ? queryResult.parameters.time : "",
+        number: queryResult.parameters.number ? queryResult.parameters.number : "",
+    }
+    let textResponse = ""
 
-    // if(keyword){
-    //     DB.searchMinutesByAnyKeyword(keyword, (err, results) => {
-    //         if(err){
-    //             return textResponse = "The are error occur in database."
-    //         }
-    //         if(results.length == 0){
-    //             return textResponse = "There are no result, please search again."
-    //         }
+    DB.searchMinutesByNumberOfMeeting(payload, (err, results) => {
+        if(err){
+            return textResponse = "The are error occur in database."
+        }
+        if(results.length == 0){
+            return textResponse = "There are no result, please search again."
+        }
 
-    //         for(let result of results){
-    //             textResponse += result.title
-    //             textResponse += "\n" + keywordsInDocumentContext(keyword, result)
-    //             textResponse += "\n"
-    //         }
+        for(let result of results){
+            textResponse += result.title
+            textResponse += "\n" + keywordsInDocumentContext(keyword, result)
+            textResponse += "\n"
+        }
 
-    //         return webhookReply(textResponse, httpResponse)
-    //     })
-    // }
-    return webhookReply("TO DO...", httpResponse)
+        return webhookReply(textResponse, httpResponse)
+    })    
+
+
+    
+    // return webhookReply("TO DO...", httpResponse)
 }
 
 const periodSearchHandler = (queryResult, httpResponse) => {
