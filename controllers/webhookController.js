@@ -3,16 +3,13 @@ const DB = new (require('./databaseController.js'))();
 exports.handle = (req, res) => {
     const intent = req.body.queryResult.intent.displayName
     const queryResult = req.body.queryResult
-    // const sessionID = req.body.outputContexts[0].name
 
-    console.log("webhook request: ", req.body);
-    // console.log("webhook query result: ", req.body.queryResult);
-    console.log("Request intent: ", intent);
+    console.log("webhook request: ", JSON.stringify(req.body));
 
     /** Handle by different intent */
     switch(intent){
         case 'keywordSearch':
-            keywordSearchHandler(queryResult, res);
+            keywordSearchHandler(req.body.queryResult, res);
             break;
         case 'locationSearch':
             addressSearchHandler(queryResult, res)
@@ -36,7 +33,7 @@ exports.handle = (req, res) => {
     
 }
 
-const webhookReply = (responseText, httpResponse) => {
+const webhookReply = (sessions , responseText, httpResponse) => {
     // webhook response
     webhookResponse = {
         "fulfillmentText": "", // Default response from webhook.
@@ -44,6 +41,15 @@ const webhookReply = (responseText, httpResponse) => {
             {
                 "text": {
                     "text": [responseText]
+                }
+            }
+        ],
+        "outputContexts": [
+            {
+                "name": `${sessions}/contexts/context-from-anykeyword-search`,
+                "lifespanCount": 5,
+                "parameters": {
+                  "test-param": "test-value"
                 }
             }
         ]
@@ -111,7 +117,9 @@ const isEmptyObject = (obj) => {
 
 /** Intent handler */
 
-const keywordSearchHandler = (queryResult, httpResponse) => {
+const keywordSearchHandler = (webhookReuqest, httpResponse) => {
+    const queryResult = webhookReuqest.body.queryResult
+    const sessions = webhookReuqest.body.session;
     let keyword = queryResult.parameters.keyword ? queryResult.parameters.keyword : "";
     let parameters = {
         keyword: keyword
@@ -136,7 +144,7 @@ const keywordSearchHandler = (queryResult, httpResponse) => {
             
 
             // return webhookReply(textResponse, httpResponse)
-            return webhookReply("Do you want to narrow down result?", httpResponse)
+            return webhookReply(sessions, "Do you want to narrow down result?", httpResponse)
         })
     }else{
         return webhookReply("No keyword detect in keywordSearchHandler", httpResponse);
