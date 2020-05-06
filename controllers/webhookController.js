@@ -3,8 +3,10 @@ const DB = new (require('./databaseController.js'))();
 exports.handle = (req, res) => {
     const intent = req.body.queryResult.intent.displayName
     const queryResult = req.body.queryResult
+    // const sessionID = req.body.outputContexts[0].name
 
-    console.log("webhook query result: ", req.body.queryResult);
+    console.log("webhook request: ", req.body);
+    // console.log("webhook query result: ", req.body.queryResult);
     console.log("Request intent: ", intent);
 
     /** Handle by different intent */
@@ -126,13 +128,15 @@ const keywordSearchHandler = (queryResult, httpResponse) => {
                 return webhookReplyToTriggerIntent('KeywordSearch-NoResult', parameters , httpResponse)
             }
 
-            for(let result of results){
-                textResponse += result.title
-                textResponse += "\n" + keywordsInDocumentContext(keyword, result)
-                textResponse += "\n"
-            }
+            // for(let result of results){
+            //     textResponse += result.title
+            //     textResponse += "\n" + keywordsInDocumentContext(keyword, result)
+            //     textResponse += "\n"
+            // }
+            
 
-            return webhookReply(textResponse, httpResponse)
+            // return webhookReply(textResponse, httpResponse)
+            return webhookReply("Do you want to narrow down result?", httpResponse)
         })
     }else{
         return webhookReply("No keyword detect in keywordSearchHandler", httpResponse);
