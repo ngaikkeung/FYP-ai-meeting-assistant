@@ -96,6 +96,35 @@ module.exports = class DB{
                 })
             }
         }
+
+        this.searchMinutesByAnyKeywordPeriod = (payload, callback) => {
+            let search = { 
+                $text: { 
+                    $search: payload.keyword 
+                }
+            } 
+            let period = {
+                $and: [
+                    {
+                        date:{
+                            $gte: new Date(payoad.period.startDate).getTime()
+                        },
+                    },
+                    {
+                        date:{
+                            $lte: new Date(payoad.period.endDate).getTime()
+                        },
+                    }
+                ]
+            }
+            let param = {
+                search,
+                period
+            }
+            return database.collection("minutes").find(param).project({ score: { $meta: "textScore" } }).sort( { score: { $meta: "textScore" } } ).toArray((error, items) => {
+                callback(error, items);
+            })
+        }
     }
 }
 

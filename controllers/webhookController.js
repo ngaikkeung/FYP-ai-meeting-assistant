@@ -13,7 +13,7 @@ exports.handle = (req, res) => {
             keywordSearchHandler(queryResult, res);
             break;
         case 'locationSearch':
-            keywordSearchHandler(queryResult, res)
+            addressSearchHandler(queryResult, res)
             break;
         case 'numberingSearch':
             numberingSearchHandler(queryResult, res)
@@ -23,6 +23,11 @@ exports.handle = (req, res) => {
             break;
         case 'dateSearch':
             dateSearchHandler(queryResult, res)
+        case 'keyword-periodSearch': 
+            keywordPeriodSearchHandler(queryResult, res)
+            break;
+        case 'keyword-dateSearch':
+            keywordDatedSearchHandler(queryResult, res)
             break;
     }
 
@@ -134,6 +139,36 @@ const keywordSearchHandler = (queryResult, httpResponse) => {
     }
 }
 
+const addressSearchHandler = (queryResult, httpResponse) => {
+    let address = queryResult.parameters.address ? queryResult.parameters.address : "";
+    let parameters = {
+        keyword: address
+    }
+    let textResponse = ""
+
+    if(keyword){
+        DB.searchMinutesByAnyKeyword(address, (err, results) => {
+            if(err){
+                return webhookReply(`The are error occur in database: ${err}`, httpResponse)
+            }
+            if(results.length == 0){
+                return webhookReply("There are no result, please search again.", httpResponse)
+                // return webhookReplyToTriggerIntent('KeywordSearch-NoResult', parameters , httpResponse)
+            }
+
+            for(let result of results){
+                textResponse += result.title
+                textResponse += "\n" + keywordsInDocumentContext(keyword, result)
+                textResponse += "\n"
+            }
+
+            return webhookReply(textResponse, httpResponse)
+        })
+    }else{
+        return webhookReply("No address detect in keywordSearchHandler", httpResponse);
+    }
+}
+
 const numberingSearchHandler = (queryResult, httpResponse) => {
     let payload = {
         timeWord: queryResult.parameters.time ? queryResult.parameters.time : "",
@@ -222,5 +257,83 @@ const dateSearchHandler = (queryResult, httpResponse) => {
         })
     }else{
         return webhookReply("No date time detect in periodSearchHandler", httpResponse);
+    }
+}
+
+const keywordPeriodSearchHandler = (queryResult, httpResponse) => {
+    let keyword = queryResult.parameters.keyword ? queryResult.parameters.keyword : "";
+    let period = !isEmptyObject(queryResult.parameters["date-period"]) ?  queryResult.parameters["date-period"] : null; 
+    let parameters = {
+        keyword: keyword
+    }
+    let textResponse = ""
+
+    if(keyword && period){
+        let payload = {
+            keyword,
+            period
+        }
+        DB.searchMinutesByAnyKeyword(payload, (err, results) => {
+            if(err){
+                return webhookReply(`The are error occur in database: ${err}`, httpResponse)
+            }
+            if(results.length == 0){
+                return webhookReply("There are no result, please search again.", httpResponse)
+                // return webhookReplyToTriggerIntent('KeywordSearch-NoResult', parameters , httpResponse)
+            }
+
+            for(let result of results){
+                textResponse += result.title
+                textResponse += "\n" + keywordsInDocumentContext(keyword, result)
+                textResponse += "\n"
+            }
+
+            return webhookReply(textResponse, httpResponse)
+        })
+    }else{
+        return webhookReply("No keyword detect in keywordPeriodSearchHandler", httpResponse);
+    }
+}
+
+const keywordDatedSearchHandler = (queryResult, httpResponse) => {
+    let keyword = queryResult.parameters.keyword ? queryResult.parameters.keyword : "";
+    let dateTime = queryResult.parameters["date-time"] ? queryResult.parameters["date-time"] : "";
+    let parameters = {
+        keyword: keyword
+    }
+    let textResponse = ""
+
+    if(keyword && period){
+        let payload = {
+            keyword,
+            period
+        }
+
+        if(typeof dateTime == 'string'){
+            dateTime = {
+                startDate: new Date(dateTime).getTime(),
+                endDate: new Date(dateTime).getTime()
+            }
+        }
+
+        DB.searchMinutesByAnyKeyword(payload, (err, results) => {
+            if(err){
+                return webhookReply(`The are error occur in database: ${err}`, httpResponse)
+            }
+            if(results.length == 0){
+                return webhookReply("There are no result, please search again.", httpResponse)
+                // return webhookReplyToTriggerIntent('KeywordSearch-NoResult', parameters , httpResponse)
+            }
+
+            for(let result of results){
+                textResponse += result.title
+                textResponse += "\n" + keywordsInDocumentContext(keyword, result)
+                textResponse += "\n"
+            }
+
+            return webhookReply(textResponse, httpResponse)
+        })
+    }else{
+        return webhookReply("No keyword detect in keywordDateSearchHandler", httpResponse);
     }
 }
