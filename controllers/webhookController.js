@@ -273,7 +273,7 @@ const keywordPeriodSearchHandler = (queryResult, httpResponse) => {
             keyword: keyword,
             period: period
         }
-        DB.searchMinutesByAnyKeyword(payload, (err, results) => {
+        DB.searchMinutesByAnyKeywordPeriod(payload, (err, results) => {
             if(err){
                 return webhookReply(`The are error occur in database: ${err}`, httpResponse)
             }
@@ -315,7 +315,7 @@ const keywordDatedSearchHandler = (queryResult, httpResponse) => {
             period: dateTime
         }
 
-        DB.searchMinutesByAnyKeyword(payload, (err, results) => {
+        DB.searchMinutesByAnyKeywordPeriod(payload, (err, results) => {
             if(err){
                 return webhookReply(`The are error occur in database: ${err}`, httpResponse)
             }
