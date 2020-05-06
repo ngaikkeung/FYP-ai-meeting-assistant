@@ -107,12 +107,12 @@ module.exports = class DB{
                 $and: [
                     {
                         date:{
-                            $gte: new Date(payoad.period.startDate).getTime()
+                            $gte: new Date(payload.period.startDate).getTime()
                         },
                     },
                     {
                         date:{
-                            $lte: new Date(payoad.period.endDate).getTime()
+                            $lte: new Date(payload.period.endDate).getTime()
                         },
                     }
                 ]
