@@ -270,8 +270,8 @@ const keywordPeriodSearchHandler = (queryResult, httpResponse) => {
 
     if(keyword && period){
         let payload = {
-            keyword,
-            period
+            keyword: keyword,
+            period: period
         }
         DB.searchMinutesByAnyKeyword(payload, (err, results) => {
             if(err){
@@ -304,16 +304,15 @@ const keywordDatedSearchHandler = (queryResult, httpResponse) => {
     let textResponse = ""
 
     if(keyword && period){
-        let payload = {
-            keyword,
-            period
-        }
-
         if(typeof dateTime == 'string'){
             dateTime = {
                 startDate: new Date(dateTime).getTime(),
                 endDate: new Date(dateTime).getTime()
             }
+        }
+        let payload = {
+            keyword: keyword,
+            period: dateTime
         }
 
         DB.searchMinutesByAnyKeyword(payload, (err, results) => {
