@@ -155,7 +155,7 @@ const addressSearchHandler = (queryResult, httpResponse) => {
             }
             if(results.length == 0){
                 return webhookReply("There are no result, please search again.", httpResponse)
-                // return webhookReplyToTriggerIntent('KeywordSearch-NoResult', parameters , httpResponse)
+                // return webhookReplyToTriggerIntent('KeywordSearch-NoResult' , httpResponse)
             }
 
             for(let result of results){
@@ -281,7 +281,7 @@ const keywordPeriodSearchHandler = (queryResult, httpResponse) => {
             }
             if(results.length == 0){
                 return webhookReply("There are no result, please search again.", httpResponse)
-                // return webhookReplyToTriggerIntent('KeywordSearch-NoResult', parameters , httpResponse)
+                // return webhookReplyToTriggerIntent('KeywordSearch-NoResult' , httpResponse)
             }
 
             for(let result of results){
@@ -323,7 +323,7 @@ const keywordDatedSearchHandler = (queryResult, httpResponse) => {
             }
             if(results.length == 0){
                 return webhookReply("There are no result, please search again.", httpResponse)
-                // return webhookReplyToTriggerIntent('KeywordSearch-NoResult', parameters , httpResponse)
+                // return webhookReplyToTriggerIntent('KeywordSearch-NoResult', httpResponse)
             }
 
             for(let result of results){
@@ -350,7 +350,7 @@ const yesHandler = (queryResult, httpResponse) => {
         return webhookReply(backendResponse, httpResponse)
     }
 
-    return webhookReplyToTriggerIntent('backToWelcome', {}, httpResponse);
+    return webhookReplyToTriggerIntent('backToWelcome', httpResponse);
 }
 
 const noHandler = (queryResult, httpResponse) => {
@@ -382,7 +382,7 @@ const noHandler = (queryResult, httpResponse) => {
     //                     }
     //                     if(results.length == 0){
     //                         return webhookReply("There are no result, please search again.", httpResponse)
-    //                         // return webhookReplyToTriggerIntent('KeywordSearch-NoResult', parameters , httpResponse)
+    //                         // return webhookReplyToTriggerIntent('KeywordSearch-NoResult' , httpResponse)
     //                     }
             
     //                     for(let result of results){
@@ -416,7 +416,7 @@ const noHandler = (queryResult, httpResponse) => {
         return intentSwitchHandler(intent.name, intent, httpResponse);
     }
 
-    return webhookReplyToTriggerIntent('backToWelcome', {}, httpResponse);
+    return webhookReplyToTriggerIntent('backToWelcome', httpResponse);
 }
 
 const intentSwitchHandler = (intent, queryResult, res) => {
