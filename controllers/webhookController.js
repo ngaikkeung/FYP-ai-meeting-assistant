@@ -131,7 +131,7 @@ const keywordSearchHandler = (queryResult, httpResponse) => {
                     textResponse += "\n"
                 }
             }
-            if(results.length > 1 && (contexts.length > 0 && contexts[contexts.length - 1].intent != 'tooMuch - no') ){
+            if(results.length > 1 && (contexts.length > 0 && contexts[contexts.length - 2].intent != 'tooMuch - no') ){
                 textResponse = `${results.length} results was found. Do you want to narrow down result?`
                 return webhookReply(textResponse, httpResponse)
             }
