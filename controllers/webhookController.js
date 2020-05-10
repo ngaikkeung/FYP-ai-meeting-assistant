@@ -128,7 +128,7 @@ const keywordSearchHandler = (queryResult, httpResponse) => {
                     textResponse += "\n"
                 }
             }
-            if(results.length > 1 && contexts[contexts.length - 1].intent != 'keywordSearch' ){
+            if(results.length > 1 && contexts.length > 0 && contexts[contexts.length - 1].intent != 'keywordSearch' ){
                 textResponse = `${results.length} results was found. Do you want to narrow down result?`
                 updateConext('keywordSearch', {keyword: keyword}, results.length, queryResult.queryText, textResponse)
                 return webhookReply(textResponse, httpResponse)
