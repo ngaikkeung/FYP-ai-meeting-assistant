@@ -117,6 +117,9 @@ const keywordSearchHandler = (queryResult, httpResponse) => {
             if(err){
                 return webhookReply(`The are error occur in database: ${err}`, httpResponse)
             }
+
+            updateConext('keywordSearch', {keyword: keyword}, results.length, queryResult.queryText, textResponse)
+
             if(results.length == 0){
                 // return webhookReply("There are no result, please search again.", httpResponse)
                 return webhookReplyToTriggerIntent('KeywordSearch-NoResult', httpResponse)
@@ -128,9 +131,8 @@ const keywordSearchHandler = (queryResult, httpResponse) => {
                     textResponse += "\n"
                 }
             }
-            if(results.length > 1 && contexts.length > 0 && contexts[contexts.length - 1].intent != 'keywordSearch' ){
+            if(results.length > 1 && (contexts.length > 0 && contexts[contexts.length - 1].intent != 'tooMuch - no') ){
                 textResponse = `${results.length} results was found. Do you want to narrow down result?`
-                updateConext('keywordSearch', {keyword: keyword}, results.length, queryResult.queryText, textResponse)
                 return webhookReply(textResponse, httpResponse)
             }
 
@@ -354,7 +356,8 @@ const yesHandler = (queryResult, httpResponse) => {
 }
 
 const noHandler = (queryResult, httpResponse) => {
-    let intent;
+    let intent = 'tooMuch - no';
+    let userResponse = queryResult.queryText;
 
     // for(let i = contexts.length - 1; i >= 0; i--){
     //     if(intents.length == 2) 
@@ -405,6 +408,8 @@ const noHandler = (queryResult, httpResponse) => {
     // }
     
     if(contexts.length > 0){
+        updateConext(intent, null, null , userResponse, '')
+        
         for(let i = contexts.length - 1; i >= 0; i--){
             if(contexts[i].parameters){
                 intent = {
