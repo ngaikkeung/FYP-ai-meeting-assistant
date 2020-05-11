@@ -1,4 +1,6 @@
 const DB = new (require('./databaseController.js'))();
+const OS = require("os");
+const hostname = OS.hostname();
 
 let contexts = []
 
@@ -115,7 +117,7 @@ const keywordSearchHandler = (queryResult, httpResponse) => {
     if(keyword){
         DB.searchMinutesByAnyKeyword(keyword, (err, results) => {
             if(err){
-                return webhookReply(`The are error occur in database: ${err}`, httpResponse)
+                return webhookReply(`There are error occur in database: ${err}`, httpResponse)
             }
 
             updateConext('keywordSearch', {keyword: keyword}, results.length, queryResult.queryText, textResponse)
@@ -124,17 +126,13 @@ const keywordSearchHandler = (queryResult, httpResponse) => {
                 // return webhookReply("There are no result, please search again.", httpResponse)
                 return webhookReplyToTriggerIntent('KeywordSearch-NoResult', httpResponse)
             }
-            if(results.length == 1){
-                for(let result of results){
-                    textResponse += result.title
-                    textResponse += "\n" + keywordsInDocumentContext(keyword, result)
-                    textResponse += "\n"
-                }
-            }
-            if(results.length > 1 && (contexts.length > 2 && contexts[contexts.length - 2].intent != 'tooMuch - no') ){
+            if(results.length > 1 && !(contexts.length > 2 && contexts[contexts.length - 2].intent == 'tooMuch - no') ){
                 textResponse = `${results.length} results was found. Do you want to narrow down result?`
                 return webhookReply(textResponse, httpResponse)
             }
+
+            textResponse = `The results are showing below page: \n
+                            https://${hostname}/query?intent=keywordSearch&keyword=${keyword}`
 
             return webhookReply(textResponse, httpResponse)
         })
