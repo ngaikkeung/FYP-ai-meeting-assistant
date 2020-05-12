@@ -121,10 +121,8 @@ const keywordSearchHandler = (queryResult, httpResponse) => {
             }
 
             updateConext('keywordSearch', {
-                parameters:{
                     keyword: keyword
-                }
-            }, results.length, queryResult.queryText, textResponse)
+                }, results.length, queryResult.queryText, textResponse)
 
             if(results.length == 0){
                 return webhookReply(`There are no result about \'${keyword}\`, please search with other keyword.`, httpResponse)
@@ -158,10 +156,8 @@ const addressSearchHandler = (queryResult, httpResponse) => {
             }
 
             updateConext('locationSearch', {
-                parameters:{
                     address: keyword
-                }
-            }, results.length, queryResult.queryText, textResponse)
+                }, results.length, queryResult.queryText, textResponse)
 
             if(results.length == 0){
                 return webhookReply(`There are no result about \'${address}\`, please search with other keyword.`, httpResponse)
@@ -195,11 +191,9 @@ const numberingSearchHandler = (queryResult, httpResponse) => {
         }
 
         updateConext('numberingSearch', {
-            parameters:{
-                timeWord: payload.timeWord, 
+                time: payload.timeWord, 
                 number: payload.number
-            }
-        }, results.length, queryResult.queryText, textResponse)
+            }, results.length, queryResult.queryText, textResponse)
 
         if(results.length == 0){
             return webhookReply(`There are no result , please search with again.`, httpResponse)
@@ -211,7 +205,7 @@ const numberingSearchHandler = (queryResult, httpResponse) => {
         }
 
         textResponse = `The results are showing below page:
-                        https://ai-fyp-meeting-emk.herokuapp.com/query?intent=numberingSearch&timeWord=${payload.timeWord}&number=${payload.number}`
+                        https://ai-fyp-meeting-emk.herokuapp.com/query?intent=numberingSearch&time=${payload.timeWord}&number=${payload.number}`
 
         return webhookReply(textResponse, httpResponse)
     })    
@@ -228,7 +222,7 @@ const periodSearchHandler = (queryResult, httpResponse) => {
             }
 
             updateConext('periodSearch', {
-                parameters:{
+                "date-period":{
                     startDate: period.startDate, 
                     endDate: period.endDate
                 }
@@ -271,7 +265,7 @@ const dateSearchHandler = (queryResult, httpResponse) => {
             }
 
             updateConext('dateSearch', {
-                parameters:{
+                "date-time":{
                     startDate: dateTime.startDate, 
                     endDate: dateTime.endDate
                 }
@@ -314,11 +308,11 @@ const keywordPeriodSearchHandler = (queryResult, httpResponse) => {
             }
 
             updateConext('keyword-periodSearch', {
-                parameters:{
                     keyword: keyword, 
-                    startDate: dateTime.startDate, 
-                    endDate: dateTime.endDate
-                }
+                    "date-time":{
+                        startDate: dateTime.startDate, 
+                        endDate: dateTime.endDate
+                    }
             }, results.length, queryResult.queryText, textResponse)
             
             if(results.length == 0){
@@ -362,11 +356,11 @@ const keywordDatedSearchHandler = (queryResult, httpResponse) => {
             }
 
             updateConext('keyword-DateSearch', {
-                parameters:{
                     keyword: keyword, 
-                    startDate: period.startDate, 
-                    endDate: period.endDate
-                }
+                    "date-time": {
+                        startDate: period.startDate, 
+                        endDate: period.endDate
+                    }
             }, results.length, queryResult.queryText, textResponse)
 
             if(results.length == 0){
