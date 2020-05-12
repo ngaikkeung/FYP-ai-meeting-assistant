@@ -123,8 +123,7 @@ const keywordSearchHandler = (queryResult, httpResponse) => {
             updateConext('keywordSearch', {keyword: keyword}, results.length, queryResult.queryText, textResponse)
 
             if(results.length == 0){
-                // return webhookReply("There are no result, please search again.", httpResponse)
-                return webhookReplyToTriggerIntent('KeywordSearch-NoResult', httpResponse)
+                return webhookReply(`There are no result about \'${keyword}\`, please search with other keyword.`, httpResponse)
             }
             if(results.length > 1 && !(contexts.length > 2 && contexts[contexts.length - 2].intent == 'tooMuch - no') ){
                 textResponse = `${results.length} results was found. Do you want to narrow down result?`
@@ -153,17 +152,21 @@ const addressSearchHandler = (queryResult, httpResponse) => {
             if(err){
                 return webhookReply(`The are error occur in database: ${err}`, httpResponse)
             }
+
+            updateConext('locationSearch', {address: keyword}, results.length, queryResult.queryText, textResponse)
+
             if(results.length == 0){
-                return webhookReply("There are no result, please search again.", httpResponse)
-                // return webhookReplyToTriggerIntent('KeywordSearch-NoResult' , httpResponse)
+                return webhookReply(`There are no result about \'${address}\`, please search with other keyword.`, httpResponse)
+            }
+            
+            if(results.length > 1 && !(contexts.length > 2 && contexts[contexts.length - 2].intent == 'tooMuch - no') ){
+                textResponse = `${results.length} results was found. Do you want to narrow down result?`
+                return webhookReply(textResponse, httpResponse)
             }
 
-            for(let result of results){
-                textResponse += result.title
-                textResponse += "\n" + keywordsInDocumentContext(keyword, result)
-                textResponse += "\n"
-            }
-
+            textResponse = `The results are showing below page:
+                            https://ai-fyp-meeting-emk.herokuapp.com/query?intent=locationSearch&address=${address}`
+            
             return webhookReply(textResponse, httpResponse)
         })
     }else{
@@ -182,21 +185,23 @@ const numberingSearchHandler = (queryResult, httpResponse) => {
         if(err){
             return webhookReply(`The are error occur in database: ${err}`, httpResponse)
         }
+
+        updateConext('numberingSearch', {timeWord: payload.timeWord, number: payload.number}, results.length, queryResult.queryText, textResponse)
+
         if(results.length == 0){
-            return webhookReply("There are no result, please search again.", httpResponse)
+            return webhookReply(`There are no result , please search with again.`, httpResponse)
         }
 
-        for(let result of results){
-            textResponse += result.title
-            textResponse += "\n"
+        if(results.length > 1 && !(contexts.length > 2 && contexts[contexts.length - 2].intent == 'tooMuch - no') ){
+            textResponse = `${results.length} results was found. Do you want to narrow down result?`
+            return webhookReply(textResponse, httpResponse)
         }
+
+        textResponse = `The results are showing below page:
+                        https://ai-fyp-meeting-emk.herokuapp.com/query?intent=numberingSearch&timeWord=${payload.timeWord}&number=${payload.number}`
 
         return webhookReply(textResponse, httpResponse)
     })    
-
-
-    
-    // return webhookReply("TO DO...", httpResponse)
 }
 
 const periodSearchHandler = (queryResult, httpResponse) => {
@@ -208,17 +213,20 @@ const periodSearchHandler = (queryResult, httpResponse) => {
             if(err){
                 return webhookReply(`The are error occur in database: ${err}`, httpResponse)
             }
+
+            updateConext('periodSearch', {startDate: period.startDate, endDate: period.endDate}, results.length, queryResult.queryText, textResponse)
+
             if(results.length == 0){
-                return webhookReply("There are no result, please search again.", httpResponse)
+                return webhookReply(`There are no result within the period \'${period.startDate} - ${period.endDate}\`, please search again.`, httpResponse)
             }
 
-            for(let result of results){
-                let minuteDate = `${new Date(result.date).getDate()}-${new Date(result.date).getMonth() + 1}-${new Date(result.date).getFullYear()}`
-
-                textResponse += result.title
-                textResponse += `\n Date: ${minuteDate}` 
-                textResponse += "\n"
+            if(results.length > 1 && !(contexts.length > 2 && contexts[contexts.length - 2].intent == 'tooMuch - no') ){
+                textResponse = `${results.length} results was found. Do you want to narrow down result?`
+                return webhookReply(textResponse, httpResponse)
             }
+
+            textResponse = `The results are showing below page:
+                            https://ai-fyp-meeting-emk.herokuapp.com/query?intent=periodSearch&startDate=${period.startDate}&endDate=${period.endDate}`
 
             return webhookReply(textResponse, httpResponse)
         })
@@ -243,17 +251,19 @@ const dateSearchHandler = (queryResult, httpResponse) => {
             if(err){
                 return webhookReply(`The are error occur in database: ${err}`, httpResponse)
             }
+
+            updateConext('dateSearch', {startDate: dateTime.startDate, endDate: dateTime.endDate}, results.length, queryResult.queryText, textResponse)
+            
             if(results.length == 0){
-                return webhookReply("There are no result, please search again.", httpResponse)
+                return webhookReply(`There are no result within the period \'${startDate} - ${endDate}\`, please search again.`, httpResponse)
+            }
+            if(results.length > 1 && !(contexts.length > 2 && contexts[contexts.length - 2].intent == 'tooMuch - no') ){
+                textResponse = `${results.length} results was found. Do you want to narrow down result?`
+                return webhookReply(textResponse, httpResponse)
             }
 
-            for(let result of results){
-                let minuteDate = `${new Date(result.date).getDate()}-${new Date(result.date).getMonth() + 1}-${new Date(result.date).getFullYear()}`
-
-                textResponse += result.title
-                textResponse += `\n Date: ${minuteDate}` 
-                textResponse += "\n"
-            }
+            textResponse = `The results are showing below page:
+                            https://ai-fyp-meeting-emk.herokuapp.com/query?intent=dateSearch&startDate=${period.startDate}&endDate=${period.endDate}`
 
             return webhookReply(textResponse, httpResponse)
         })
@@ -279,16 +289,16 @@ const keywordPeriodSearchHandler = (queryResult, httpResponse) => {
             if(err){
                 return webhookReply(`The are error occur in database: ${err}`, httpResponse)
             }
+
+            updateConext('keyword-periodSearch', {keyword: keyword, startDate: dateTime.startDate, endDate: dateTime.endDate}, results.length, queryResult.queryText, textResponse)
+            
             if(results.length == 0){
                 return webhookReply("There are no result, please search again.", httpResponse)
                 // return webhookReplyToTriggerIntent('KeywordSearch-NoResult' , httpResponse)
             }
-
-            for(let result of results){
-                textResponse += result.title
-                textResponse += "\n" + keywordsInDocumentContext(keyword, result)
-                textResponse += "\n"
-            }
+          
+            textResponse = `The results are showing below page:
+                            https://ai-fyp-meeting-emk.herokuapp.com/query?intent=keyword-periodSearch&keyword=${keyword}&startDate=${period.startDate}&endDate=${period.endDate}`
 
             return webhookReply(textResponse, httpResponse)
         })
@@ -321,6 +331,9 @@ const keywordDatedSearchHandler = (queryResult, httpResponse) => {
             if(err){
                 return webhookReply(`The are error occur in database: ${err}`, httpResponse)
             }
+
+            updateConext('keyword-DateSearch', {keyword: keyword, startDate: period.startDate, endDate: period.endDate}, results.length, queryResult.queryText, textResponse)
+
             if(results.length == 0){
                 return webhookReply("There are no result, please search again.", httpResponse)
                 // return webhookReplyToTriggerIntent('KeywordSearch-NoResult', httpResponse)
@@ -414,6 +427,7 @@ const noHandler = (queryResult, httpResponse) => {
                     name: contexts[i].intent,
                     parameters: contexts[i].parameters
                 }
+                break;
             }
         }
         return intentSwitchHandler(intent.name, intent, httpResponse);
