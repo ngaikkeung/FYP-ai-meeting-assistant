@@ -419,18 +419,21 @@ const noHandler = (queryResult, httpResponse) => {
     // }
     
     if(contexts.length > 0){
+        let previousIntent;
+
         updateConext(intent, null, null , userResponse, '')
-        
+
         for(let i = contexts.length - 1; i >= 0; i--){
             if(contexts[i].parameters){
-                intent = {
+                previousIntent = {
                     name: contexts[i].intent,
                     parameters: contexts[i].parameters
                 }
                 break;
             }
         }
-        return intentSwitchHandler(intent.name, intent, httpResponse);
+        console.log("No and returned intent: ", JSON.stringify(previousIntent));
+        return intentSwitchHandler(previousIntent.name, previousIntent, httpResponse);
     }
 
     return webhookReplyToTriggerIntent('backToWelcome', httpResponse);
