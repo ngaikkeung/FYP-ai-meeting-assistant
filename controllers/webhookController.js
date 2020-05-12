@@ -131,8 +131,8 @@ const keywordSearchHandler = (queryResult, httpResponse) => {
                 return webhookReply(textResponse, httpResponse)
             }
 
-            textResponse = `The results are showing below page: \n
-                            https://${hostname}/query?intent=keywordSearch&keyword=${keyword}`
+            textResponse = `The results are showing below page:
+                            https://ai-fyp-meeting-emk.herokuapp.com/query?intent=keywordSearch&keyword=${keyword}`
 
             return webhookReply(textResponse, httpResponse)
         })
@@ -422,6 +422,11 @@ const noHandler = (queryResult, httpResponse) => {
     return webhookReplyToTriggerIntent('backToWelcome', httpResponse);
 }
 
+const resetContext = (queryResult, httpResponse) => {
+    contexts = [];
+    return webhookReplyToTriggerIntent('backToWelcome', httpResponse);
+}
+
 const intentSwitchHandler = (intent, queryResult, res) => {
     switch(intent){
         case 'keywordSearch':
@@ -451,5 +456,7 @@ const intentSwitchHandler = (intent, queryResult, res) => {
         case 'tooMuch - no':
             noHandler(queryResult, res)
             break;
+        case 'resetSearch':
+            resetContext(queryResult, res)
     }
 }
