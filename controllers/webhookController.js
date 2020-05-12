@@ -120,7 +120,11 @@ const keywordSearchHandler = (queryResult, httpResponse) => {
                 return webhookReply(`There are error occur in database: ${err}`, httpResponse)
             }
 
-            updateConext('keywordSearch', {keyword: keyword}, results.length, queryResult.queryText, textResponse)
+            updateConext('keywordSearch', {
+                parameters:{
+                    keyword: keyword
+                }
+            }, results.length, queryResult.queryText, textResponse)
 
             if(results.length == 0){
                 return webhookReply(`There are no result about \'${keyword}\`, please search with other keyword.`, httpResponse)
@@ -153,7 +157,11 @@ const addressSearchHandler = (queryResult, httpResponse) => {
                 return webhookReply(`The are error occur in database: ${err}`, httpResponse)
             }
 
-            updateConext('locationSearch', {address: keyword}, results.length, queryResult.queryText, textResponse)
+            updateConext('locationSearch', {
+                parameters:{
+                    address: keyword
+                }
+            }, results.length, queryResult.queryText, textResponse)
 
             if(results.length == 0){
                 return webhookReply(`There are no result about \'${address}\`, please search with other keyword.`, httpResponse)
@@ -186,7 +194,12 @@ const numberingSearchHandler = (queryResult, httpResponse) => {
             return webhookReply(`The are error occur in database: ${err}`, httpResponse)
         }
 
-        updateConext('numberingSearch', {timeWord: payload.timeWord, number: payload.number}, results.length, queryResult.queryText, textResponse)
+        updateConext('numberingSearch', {
+            parameters:{
+                timeWord: payload.timeWord, 
+                number: payload.number
+            }
+        }, results.length, queryResult.queryText, textResponse)
 
         if(results.length == 0){
             return webhookReply(`There are no result , please search with again.`, httpResponse)
@@ -214,7 +227,12 @@ const periodSearchHandler = (queryResult, httpResponse) => {
                 return webhookReply(`The are error occur in database: ${err}`, httpResponse)
             }
 
-            updateConext('periodSearch', {startDate: period.startDate, endDate: period.endDate}, results.length, queryResult.queryText, textResponse)
+            updateConext('periodSearch', {
+                parameters:{
+                    startDate: period.startDate, 
+                    endDate: period.endDate
+                }
+            }, results.length, queryResult.queryText, textResponse)
 
             if(results.length == 0){
                 return webhookReply(`There are no result within the period \'${period.startDate} - ${period.endDate}\`, please search again.`, httpResponse)
@@ -252,7 +270,12 @@ const dateSearchHandler = (queryResult, httpResponse) => {
                 return webhookReply(`The are error occur in database: ${err}`, httpResponse)
             }
 
-            updateConext('dateSearch', {startDate: dateTime.startDate, endDate: dateTime.endDate}, results.length, queryResult.queryText, textResponse)
+            updateConext('dateSearch', {
+                parameters:{
+                    startDate: dateTime.startDate, 
+                    endDate: dateTime.endDate
+                }
+            }, results.length, queryResult.queryText, textResponse)
             
             if(results.length == 0){
                 return webhookReply(`There are no result within the period \'${startDate} - ${endDate}\`, please search again.`, httpResponse)
@@ -290,7 +313,13 @@ const keywordPeriodSearchHandler = (queryResult, httpResponse) => {
                 return webhookReply(`The are error occur in database: ${err}`, httpResponse)
             }
 
-            updateConext('keyword-periodSearch', {keyword: keyword, startDate: dateTime.startDate, endDate: dateTime.endDate}, results.length, queryResult.queryText, textResponse)
+            updateConext('keyword-periodSearch', {
+                parameters:{
+                    keyword: keyword, 
+                    startDate: dateTime.startDate, 
+                    endDate: dateTime.endDate
+                }
+            }, results.length, queryResult.queryText, textResponse)
             
             if(results.length == 0){
                 return webhookReply("There are no result, please search again.", httpResponse)
@@ -332,7 +361,13 @@ const keywordDatedSearchHandler = (queryResult, httpResponse) => {
                 return webhookReply(`The are error occur in database: ${err}`, httpResponse)
             }
 
-            updateConext('keyword-DateSearch', {keyword: keyword, startDate: period.startDate, endDate: period.endDate}, results.length, queryResult.queryText, textResponse)
+            updateConext('keyword-DateSearch', {
+                parameters:{
+                    keyword: keyword, 
+                    startDate: period.startDate, 
+                    endDate: period.endDate
+                }
+            }, results.length, queryResult.queryText, textResponse)
 
             if(results.length == 0){
                 return webhookReply("There are no result, please search again.", httpResponse)
