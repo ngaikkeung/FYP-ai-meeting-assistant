@@ -125,7 +125,7 @@ const keywordSearchHandler = (queryResult, httpResponse) => {
                 }, results.length, queryResult.queryText, textResponse)
 
             if(results.length == 0){
-                return webhookReply(`There are no result about \'${keyword}\`, please search with other keyword.`, httpResponse)
+                return webhookReply(`There are no result about \`${keyword}\`, please search with other keyword.`, httpResponse)
             }
             if(results.length > 1 && !(contexts.length > 2 && contexts[contexts.length - 2].intent == 'tooMuch - no') ){
                 textResponse = `${results.length} results was found. Do you want to narrow down result?`
@@ -160,7 +160,7 @@ const addressSearchHandler = (queryResult, httpResponse) => {
                 }, results.length, queryResult.queryText, textResponse)
 
             if(results.length == 0){
-                return webhookReply(`There are no result about \'${address}\`, please search with other keyword.`, httpResponse)
+                return webhookReply(`There are no result about \`${address}\`, please search with other keyword.`, httpResponse)
             }
             
             if(results.length > 1 && !(contexts.length > 2 && contexts[contexts.length - 2].intent == 'tooMuch - no') ){
@@ -229,7 +229,7 @@ const periodSearchHandler = (queryResult, httpResponse) => {
             }, results.length, queryResult.queryText, textResponse)
 
             if(results.length == 0){
-                return webhookReply(`There are no result within the period \'${period.startDate} - ${period.endDate}\`, please search again.`, httpResponse)
+                return webhookReply(`There are no result within the period \`${period.startDate} - ${period.endDate}\`, please search again.`, httpResponse)
             }
 
             if(results.length > 1 && !(contexts.length > 2 && contexts[contexts.length - 2].intent == 'tooMuch - no') ){
@@ -272,7 +272,7 @@ const dateSearchHandler = (queryResult, httpResponse) => {
             }, results.length, queryResult.queryText, textResponse)
             
             if(results.length == 0){
-                return webhookReply(`There are no result within the period \'${startDate} - ${endDate}\`, please search again.`, httpResponse)
+                return webhookReply(`There are no result within the period \`${startDate} - ${endDate}\`, please search again.`, httpResponse)
             }
             if(results.length > 1 && !(contexts.length > 2 && contexts[contexts.length - 2].intent == 'tooMuch - no') ){
                 textResponse = `${results.length} results was found. Do you want to narrow down result?`
@@ -379,6 +379,23 @@ const keywordDatedSearchHandler = (queryResult, httpResponse) => {
     }else{
         return webhookReply("No keyword detect in keywordDateSearchHandler", httpResponse);
     }
+}
+
+const narrowDownHandler = (queryResult, httpResponse) => {
+    if(contexts.length >= 2 && contexts[contexts.length - 1].intent == 'tooMuch - yes'){
+        let keyword = queryResult.parameters.keyword ? queryResult.parameters.keyword : "";
+        let textResponse = ""
+        let previousIntent = contexts.length[contexts.length - 2].intent
+
+        console.log("Previous Intent: ", previousIntent);
+        // if(keyword){
+        //     updateConext('narrowDown-keyword', {
+        //         keyword: keyword, 
+        //     }, results.length, queryResult.queryText, textResponse)
+        // }
+    }
+
+    return webhookReplyToTriggerIntent('backToWelcome', httpResponse);
 }
 
 const yesHandler = (queryResult, httpResponse) => {
@@ -501,6 +518,9 @@ const intentSwitchHandler = (intent, queryResult, res) => {
             break;
         case 'tooMuch - no':
             noHandler(queryResult, res)
+            break;
+        case 'narrowDown-keyword':
+            narrowDownHandler(queryResult, res)
             break;
         case 'resetSearch':
             resetContext(queryResult, res)
