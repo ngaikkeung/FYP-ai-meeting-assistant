@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .highli{ 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+            display: -webkit-box;    
+              
+            /* The number of lines to be displayed */ 
+            -webkit-line-clamp: 5;  
+            -webkit-box-orient: vertical; 
+        } 
+    </style>
+    <script>
+        const queryString = window.location.search;
+        var keyword = new URLSearchParams(queryString).get("keyword");
+    </script>
+    <title>Searching Result</title>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center">PowerMeeting</h1>
+        <h4>Search Result:</h4>       
+        <div class="list-group">
+            <% for(i=0; i < results.length ; i++){ %>
+
+                <div class="list-group-item list-group-item-action flex-column align-items-start">
+                    <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1"><a href="#"><%= results[i].title %></a></h5>
+                    </div>
+                    <p class="mb-1 highli" id="content<%= i %>" ></p>
+                    <small id="date"></small>
+                </div>
+                <script>
+                    var date = new Date(<%= results[i].date %>);
+                    document.getElementById("date").innerHTML = date;                    
+                    
+                    var fullcontent = "<%= results[i].content %>";
+                    var key = [];
+                    var displaycontent = "";
+                    for (keywposition = fullcontent.toLowerCase().indexOf(keyword); keywposition >= 0; keywposition = fullcontent.toLowerCase().indexOf(keyword, keywposition + 1)) {
+                        key.push(keywposition);
+                    }
+                    for (i = 0; i < key.length; i++){
+                        var frontcontent = fullcontent.substring(0, key[i]);
+                        var backcontent = fullcontent.substring(key[i]);
+                        var front = frontcontent.lastIndexOf(".");
+                        var back = backcontent.indexOf(".");
+                        if (key[i] > front && key[i] < back){
+                            continue;
+                        }
+                        displaycontent += frontcontent.substring(front+1) + backcontent.substring(0, back+1);
+                        //console.log(displaycontent);
+                        // console.log(frontcontent);
+                        // console.log(backcontent);
+
+                    }
+                    document.getElementById("content<%= i %>").innerHTML = displaycontent;
+                </script>
+            <% } %>
+        </div>           
+    </div>    
+</body>
+<script src="./public/js/hilitor.js"></script>
+<script>
+
+  window.addEventListener("DOMContentLoaded", function(e) {
+    var hiliclass = document.getElementsByClassName("highli");
+    for (i=0; i<hiliclass.length; i++){
+        var myHilitor2 = new Hilitor("content" + i);
+        myHilitor2.setMatchType("left");
+        myHilitor2.apply(keyword);
+    }
+  }, false);
+
+</script>
+</html>
