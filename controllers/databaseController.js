@@ -137,7 +137,7 @@ module.exports = class DB{
                         results: { 
                             $regexMatch: { 
                                 input: "$content", 
-                                regex: /${payload[1]}/i
+                                regex: new RegExp(payload[1], "i") 
                             }  
                         } 
                     } 
