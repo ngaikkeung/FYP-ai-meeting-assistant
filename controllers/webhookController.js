@@ -110,33 +110,55 @@ const updateConext = (intent, parameters, queryResult, userResponse, backendResp
 
 /** Intent handler */
 
-const keywordSearchHandler = (queryResult, httpResponse) => {
+const keywordSearchHandler = (queryResult, httpResponse, isSecondIntent) => {
     let keyword = queryResult.parameters.keyword ? queryResult.parameters.keyword : "";
     let textResponse = ""
 
     if(keyword){
-        DB.searchMinutesByAnyKeyword(keyword, (err, results) => {
-            if(err){
-                return webhookReply(`There are error occur in database: ${err}`, httpResponse)
-            }
-
-            updateConext('keywordSearch', {
-                    keyword: keyword
-                }, results.length, queryResult.queryText, textResponse)
-
-            if(results.length == 0){
-                return webhookReply(`There are no result about \`${keyword}\`, please search with other keyword.`, httpResponse)
-            }
-            if(results.length > 1 && !(contexts.length > 2 && contexts[contexts.length - 2].intent == 'tooMuch - no') ){
-                textResponse = `${results.length} results was found. Do you want to narrow down result?`
+        if(!isSecondIntent){
+            DB.searchMinutesByAnyKeyword(keyword, (err, results) => {
+                if(err){
+                    return webhookReply(`There are error occur in database: ${err}`, httpResponse)
+                }
+    
+                updateConext('keywordSearch', {
+                        keyword: keyword
+                    }, results.length, queryResult.queryText, textResponse)
+    
+                if(results.length == 0){
+                    return webhookReply(`There are no result about \`${keyword}\`, please search with other keyword.`, httpResponse)
+                }
+                if(results.length > 1 && !(contexts.length > 2 && contexts[contexts.length - 2].intent == 'tooMuch - no') ){
+                    textResponse = `${results.length} results was found. Do you want to narrow down result?`
+                    return webhookReply(textResponse, httpResponse)
+                }
+    
+                textResponse = `The results are showing below page:
+                                https://ai-fyp-meeting-emk.herokuapp.com/query?intent=keywordSearch&keyword=${keyword}`
+    
                 return webhookReply(textResponse, httpResponse)
-            }
-
-            textResponse = `The results are showing below page:
-                            https://ai-fyp-meeting-emk.herokuapp.com/query?intent=keywordSearch&keyword=${keyword}`
-
-            return webhookReply(textResponse, httpResponse)
-        })
+            })
+        }else{
+            let keywords = [keyword, contexts[contexts.length - 2].parameters.keyword]
+            DB.searchMinutesByTwoKeyword(keywords, (err, results) => {
+                if(err){
+                    return webhookReply(`There are error occur in database: ${err}`, httpResponse)
+                }
+    
+                updateConext('keywordSearch', {
+                        keyword: keywords
+                    }, results.length, queryResult.queryText, textResponse)
+    
+                if(results.length == 0){
+                    return webhookReply(`There are no result about \`${keyword}\`, please search with other keyword.`, httpResponse)
+                }
+    
+                textResponse = `The results are showing below page:
+                                https://ai-fyp-meeting-emk.herokuapp.com/query?intent=keywordSearch&keyword1=${keywords[0]}&keyword2=${keywords[1]}&isSecondIntent=1`
+    
+                return webhookReply(textResponse, httpResponse)
+            })
+        }
     }else{
         return webhookReply("No keyword detect in keywordSearchHandler", httpResponse);
     }
@@ -493,7 +515,7 @@ const resetContext = (queryResult, httpResponse) => {
 const intentSwitchHandler = (intent, queryResult, res) => {
     switch(intent){
         case 'keywordSearch':
-            keywordSearchHandler(queryResult, res);
+            keywordSearchHandler(queryResult, res, false);
             break;
         case 'locationSearch':
             addressSearchHandler(queryResult, res)
@@ -524,5 +546,27 @@ const intentSwitchHandler = (intent, queryResult, res) => {
             break;
         case 'resetSearch':
             resetContext(queryResult, res)
+    }
+}
+
+const seconIntentSwitchHandler = (firstIntent, queryResult, res) => {
+    switch(firstIntent){
+        case 'keywordSearch':
+            keywordSearchHandler(queryResult, res, true);
+            break;
+        case 'locationSearch':
+            addressSearchHandler(queryResult, res)
+            break;
+        case 'numberingSearch':
+            numberingSearchHandler(queryResult, res)
+            break;
+        case 'periodSearch':
+            periodSearchHandler(queryResult, res)
+            break;
+        case 'dateSearch':
+            dateSearchHandler(queryResult, res)
+            break;
+        default:
+            return webhookReplyToTriggerIntent('backToWelcome', httpResponse);
     }
 }

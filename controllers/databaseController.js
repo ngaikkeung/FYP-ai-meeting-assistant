@@ -123,7 +123,7 @@ module.exports = class DB{
             })
         }
 
-        this.searchMinutesByKeywordLocation = (payload, callback) => {
+        this.searchMinutesByTwoKeyword = (payload, callback) => {
             let aggregate = [
                 {
                     $match: {
