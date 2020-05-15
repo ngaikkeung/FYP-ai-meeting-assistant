@@ -140,6 +140,7 @@ const keywordSearchHandler = (queryResult, httpResponse, isSecondIntent) => {
             })
         }else{
             let keywords = [keyword, contexts[contexts.length - 2].parameters.keyword]
+            
             DB.searchMinutesByTwoKeyword(keywords, (err, results) => {
                 if(err){
                     return webhookReply(`There are error occur in database: ${err}`, httpResponse)
