@@ -385,7 +385,7 @@ const narrowDownHandler = (queryResult, httpResponse) => {
     if(contexts.length >= 2 && contexts[contexts.length - 1].intent == 'tooMuch - yes'){
         let keyword = queryResult.parameters.keyword ? queryResult.parameters.keyword : "";
         let textResponse = ""
-        let previousIntent = contexts.length[contexts.length - 2].intent
+        let previousIntent = contexts[contexts.length - 2].intent
 
         console.log("Previous Intent: ", previousIntent);
         // if(keyword){
