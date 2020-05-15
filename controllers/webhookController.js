@@ -410,11 +410,10 @@ const narrowDownHandler = (queryResult, httpResponse) => {
         let previousIntent = contexts[contexts.length - 2].intent
 
         console.log("Previous Intent: ", previousIntent);
-        // if(keyword){
-        //     updateConext('narrowDown-keyword', {
-        //         keyword: keyword, 
-        //     }, results.length, queryResult.queryText, textResponse)
-        // }
+
+       if(previousIntent){
+            return seconIntentSwitchHandler(previousIntent, queryResult, httpResponse);
+       }
     }
 
     return webhookReplyToTriggerIntent('backToWelcome', httpResponse);
