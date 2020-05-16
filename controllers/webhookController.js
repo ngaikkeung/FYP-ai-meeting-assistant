@@ -50,6 +50,9 @@ const webhookReply = (responseText, httpResponse) => {
     console.log("Webhook response: ", JSON.stringify(webhookResponse));
     return httpResponse.json(webhookResponse)
 }
+const wehookReplyRich = (payload, httpResponse) => {
+    return httpResponse.json(payload) 
+}
 
 const webhookReplyToTriggerIntent = (eventName, httpResponse) => {
     // webhook response
@@ -144,8 +147,31 @@ const keywordSearchHandler = (queryResult, httpResponse, isSecondIntent = false)
                     return webhookReply(`There are no result about \`${keyword}\`, please search with other keyword.`, httpResponse)
                 }
                 if(results.length > 1 && !(contexts.length > 2 && contexts[contexts.length - 2].intent == 'tooMuch - no') ){
-                    textResponse = `${results.length} results was found. Do you want to narrow down result? (Yes / No)`
-                    return webhookReply(textResponse, httpResponse)
+                    // textResponse = `${results.length} results was found. Do you want to narrow down result? (Yes / No)`
+                    // return webhookReply(textResponse, httpResponse)
+                    let richPayload = {
+                        payload: {
+                            "richContent": [
+                                [
+                                  {
+                                    "type": "button",
+                                    "icon": {
+                                      "type": "", // Default icon is arrow
+                                      "color": "#FF9800"
+                                    },
+                                    "text": "Button text",
+                                    "link": "https://example.com",
+                                    "event": {
+                                      "name": "",
+                                      "languageCode": "",
+                                      "parameters": {}
+                                    }
+                                  }
+                                ]
+                              ]
+                        }
+                    }
+                    return wehookReplyRich(richPayload, httpResponse)
                 }
     
                 textResponse = `The results are showing below page:
