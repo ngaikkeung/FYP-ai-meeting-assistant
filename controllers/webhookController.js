@@ -164,7 +164,19 @@ const keywordSearchHandler = (queryResult, httpResponse, isSecondIntent = false)
                                             "color": "#FF9800"
                                         },
                                         "text": "Button text",
-                                        "link": "https://example.com",
+                                        "event": {
+                                            "name": "",
+                                            "languageCode": "",
+                                            "parameters": {}
+                                        }
+                                    },
+                                    {
+                                        "type": "button",
+                                        "icon": {
+                                            "type": "", // Default icon is arrow
+                                            "color": "#FF9800"
+                                        },
+                                        "text": "Button text 22222",
                                         "event": {
                                             "name": "",
                                             "languageCode": "",
