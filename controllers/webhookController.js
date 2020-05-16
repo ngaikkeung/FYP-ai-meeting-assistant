@@ -124,9 +124,10 @@ const updateConext = (intent, parameters, queryResult, userResponse, backendResp
 
 /** Intent handler */
 
-const keywordSearchHandler = (queryResult, httpResponse, isSecondIntent) => {
+const keywordSearchHandler = (queryResult, httpResponse, isSecondIntent = false) => {
     let keyword = queryResult.parameters.keyword ? queryResult.parameters.keyword : "";
     let textResponse = ""
+    let textResponseArray = [];
 
     if(keyword){
         if(!isSecondIntent){
@@ -168,10 +169,12 @@ const keywordSearchHandler = (queryResult, httpResponse, isSecondIntent) => {
                     return webhookReply(`There are no result about \`${keyword}\`, please search with other keyword.`, httpResponse)
                 }
     
-                textResponse = `The results are showing below page:
-                                https://ai-fyp-meeting-emk.herokuapp.com/query?intent=keywordSearch&keyword1=${keywords[0]}&keyword2=${keywords[1]}&isSecondIntent=1`
-    
-                return webhookReply(textResponse, httpResponse)
+                // textResponse = `The results are showing below page:
+                //                 https://ai-fyp-meeting-emk.herokuapp.com/query?intent=keywordSearch&keyword1=${keywords[0]}&keyword2=${keywords[1]}&isSecondIntent=1`
+                textResponseArray.push(`${results.length} results was found. The results are showing below page:`)
+                textResponseArray.push(`https://ai-fyp-meeting-emk.herokuapp.com/query?intent=keywordSearch&keyword1=${keywords[0]}&keyword2=${keywords[1]}&isSecondIntent=1`)
+
+                return webhookReply(textResponseArray, httpResponse)
             })
         }
     }else{
@@ -179,7 +182,7 @@ const keywordSearchHandler = (queryResult, httpResponse, isSecondIntent) => {
     }
 }
 
-const addressSearchHandler = (queryResult, httpResponse, isSecondIntent) => {
+const addressSearchHandler = (queryResult, httpResponse, isSecondIntent = false) => {
     let address = queryResult.parameters.address ? queryResult.parameters.address : "";
     let textResponse = "";
     let textResponseArray = [];
@@ -206,7 +209,7 @@ const addressSearchHandler = (queryResult, httpResponse, isSecondIntent) => {
     
                 // textResponse = `${results} results was found. The results are showing below page:
                 //                 https://ai-fyp-meeting-emk.herokuapp.com/query?intent=locationSearch&address=${address}`
-                textResponseArray.push(`${results} results was found. The results are showing below page:`)
+                textResponseArray.push(`${results.length} results was found. The results are showing below page:`)
                 textResponseArray.push(`https://ai-fyp-meeting-emk.herokuapp.com/query?intent=locationSearch&address=${address}`);
     
                 return webhookReply(textResponseArray, httpResponse)
@@ -229,8 +232,9 @@ const addressSearchHandler = (queryResult, httpResponse, isSecondIntent) => {
     
                 // textResponse = `The results are showing below page:
                 //                 https://ai-fyp-meeting-emk.herokuapp.com/query?intent=keywordSearch&keyword1=${keywords[0]}&keyword2=${keywords[1]}&isSecondIntent=1`
-                textResponseArray.push(`${results} results was found. The results are showing below page:`)
+                textResponseArray.push(`${results.length} results was found. The results are showing below page:`)
                 textResponseArray.push(` https://ai-fyp-meeting-emk.herokuapp.com/query?intent=keywordSearch&keyword1=${keywords[0]}&keyword2=${keywords[1]}&isSecondIntent=1`);
+                
                 return webhookReply(textResponseArray, httpResponse)
             })
         }
@@ -239,78 +243,141 @@ const addressSearchHandler = (queryResult, httpResponse, isSecondIntent) => {
     }
 }
 
-const numberingSearchHandler = (queryResult, httpResponse) => {
+const numberingSearchHandler = (queryResult, httpResponse, isSecondIntent = false) => {
     let payload = {
         timeWord: queryResult.parameters.time ? queryResult.parameters.time : "",
         number: queryResult.parameters.number ? queryResult.parameters.number : "",
     }
     let textResponse = ""
+    let textResponseArray = []
 
-    DB.searchMinutesByNumberOfMeeting(payload, (err, results) => {
-        if(err){
-            return webhookReply(`The are error occur in database: ${err}`, httpResponse)
-        }
-
-        updateConext('numberingSearch', {
-                time: payload.timeWord, 
-                number: payload.number
-            }, results.length, queryResult.queryText, textResponse)
-
-        if(results.length == 0){
-            return webhookReply(`There are no result , please search with again.`, httpResponse)
-        }
-
-        if(results.length > 1 && !(contexts.length > 2 && contexts[contexts.length - 2].intent == 'tooMuch - no') ){
-            textResponse = `${results.length} results was found. Do you want to narrow down result?`
-            return webhookReply(textResponse, httpResponse)
-        }
-
-        textResponse = `The results are showing below page:
-                        https://ai-fyp-meeting-emk.herokuapp.com/query?intent=numberingSearch&time=${payload.timeWord}&number=${payload.number}`
-
-        return webhookReply(textResponse, httpResponse)
-    })    
-}
-
-const periodSearchHandler = (queryResult, httpResponse) => {
-    let period = !isEmptyObject(queryResult.parameters["date-period"]) ?  queryResult.parameters["date-period"] : null; 
-    let textResponse = ""
-
-    if(period){
-        DB.searchMinutesByPeiod(period, (err, results) => {
+    if(!isSecondIntent){
+        DB.searchMinutesByNumberOfMeeting(payload, (err, results) => {
             if(err){
                 return webhookReply(`The are error occur in database: ${err}`, httpResponse)
             }
-
-            updateConext('periodSearch', {
-                "date-period":{
-                    startDate: period.startDate, 
-                    endDate: period.endDate
-                }
-            }, results.length, queryResult.queryText, textResponse)
-
+    
+            updateConext('numberingSearch', {
+                    time: payload.timeWord, 
+                    number: payload.number,
+                }, results.length, queryResult.queryText, textResponse)
+    
             if(results.length == 0){
-                return webhookReply(`There are no result within the period \`${period.startDate} - ${period.endDate}\`, please search again.`, httpResponse)
+                return webhookReply(`There are no result , please search again.`, httpResponse)
             }
-
+    
             if(results.length > 1 && !(contexts.length > 2 && contexts[contexts.length - 2].intent == 'tooMuch - no') ){
-                textResponse = `${results.length} results was found. Do you want to narrow down result?`
+                textResponse = `${results.length} results was found. Do you want to narrow down result? (Yes / No)`
                 return webhookReply(textResponse, httpResponse)
             }
+    
+            // textResponse = `The results are showing below page:
+            //                 https://ai-fyp-meeting-emk.herokuapp.com/query?intent=numberingSearch&time=${payload.timeWord}&number=${payload.number}`
+            textResponseArray.push(`${results.length} results was found. The results are showing below page:`)
+            textResponseArray.push(`https://ai-fyp-meeting-emk.herokuapp.com/query?intent=numberingSearch&time=${payload.timeWord}&number=${payload.number}`)
+            
+            return webhookReply(textResponseArray, httpResponse)
+        })   
+    }else{
+        payload.keyword = queryResult.secondSearchParameters.keyword
 
-            textResponse = `The results are showing below page:
-                            https://ai-fyp-meeting-emk.herokuapp.com/query?intent=periodSearch&startDate=${period.startDate}&endDate=${period.endDate}`
-
-            return webhookReply(textResponse, httpResponse)
+        DB.searchMinutesByNumberingAndKeyword(payload, (err, results) => {
+            if(err){
+                return webhookReply(`The are error occur in database: ${err}`, httpResponse)
+            }
+    
+            updateConext('numberingSearch', payload, results.length, queryResult.queryText, textResponse)
+    
+            if(results.length == 0){
+                return webhookReply(`There are no result , please search again.`, httpResponse)
+            }
+    
+            // textResponse = `The results are showing below page:
+            //                 https://ai-fyp-meeting-emk.herokuapp.com/query?intent=numberingSearch&time=${payload.timeWord}&number=${payload.number}`
+            textResponseArray.push(`${results.length} results was found. The results are showing below page:`)
+            textResponseArray.push(`https://ai-fyp-meeting-emk.herokuapp.com/query?intent=numberingSearch&time=${payload.timeWord}&number=${payload.number}&keyword=${payload.keyword}&isSecondIntent=1`)
+            return webhookReply(textResponseArray, httpResponse)
         })
+    }
+}
+
+const periodSearchHandler = (queryResult, httpResponse, isSecondIntent = false) => {
+    let period = !isEmptyObject(queryResult.parameters["date-period"]) ?  queryResult.parameters["date-period"] : null; 
+    let textResponse = ""
+    let textResponseArray = []
+
+    if(period){
+        if(!isSecondIntent){
+            DB.searchMinutesByPeiod(period, (err, results) => {
+                if(err){
+                    return webhookReply(`The are error occur in database: ${err}`, httpResponse)
+                }
+    
+                updateConext('periodSearch', {
+                    "date-period":{
+                        startDate: period.startDate, 
+                        endDate: period.endDate
+                    }
+                }, results.length, queryResult.queryText, textResponse)
+    
+                if(results.length == 0){
+                    return webhookReply(`There are no result within the period \`${period.startDate} - ${period.endDate}\`, please search again.`, httpResponse)
+                }
+    
+                if(results.length > 1 && !(contexts.length > 2 && contexts[contexts.length - 2].intent == 'tooMuch - no') ){
+                    textResponse = `${results.length} results was found. Do you want to narrow down result? (Yes/No)`
+                    return webhookReply(textResponse, httpResponse)
+                }
+    
+                // textResponse = `The results are showing below page:
+                //                 https://ai-fyp-meeting-emk.herokuapp.com/query?intent=periodSearch&startDate=${period.startDate}&endDate=${period.endDate}`
+                textResponseArray.push(`${results.length} results was found. The results are showing below page:`)
+                textResponseArray.push(`https://ai-fyp-meeting-emk.herokuapp.com/query?intent=periodSearch&startDate=${period.startDate}&endDate=${period.endDate}`)
+                
+                return webhookReply(textResponseArray, httpResponse)
+            })
+        }else{
+            let payload = {
+                period: period,
+                keyword: queryResult.secondSearchParameters.keyword
+            }
+
+            DB.searchMinutesByAnyKeywordPeriod(payload, (err, results) => {
+                if(err){
+                    return webhookReply(`The are error occur in database: ${err}`, httpResponse)
+                }
+    
+                updateConext('periodSearch', {
+                    "date-period":{
+                        startDate: period.startDate, 
+                        endDate: period.endDate
+                    },
+                    keyword: payload.keyword
+                }, results.length, queryResult.queryText, textResponse)
+    
+                if(results.length == 0){
+                    return webhookReply(`There are no result within the period \`${startDate} - ${endDate}\` and keyword \`${payload.keyword}\`, please search again.`, httpResponse)
+                }
+    
+    
+                // textResponse = `The results are showing below page:
+                //                 https://ai-fyp-meeting-emk.herokuapp.com/query?intent=periodSearch&startDate=${period.startDate}&endDate=${period.endDate}`
+                textResponseArray.push(`${results.length} results was found. The results are showing below page:`)
+                textResponseArray.push(`https://ai-fyp-meeting-emk.herokuapp.com/query?intent=periodSearch&startDate=${period.startDate}&endDate=${period.endDate}&keyword=${payload.keyword}&isSecondIntent=1`)
+                
+                return webhookReply(textResponseArray, httpResponse)
+            })
+        }
+        
     }else{
         return webhookReply("No period detect in periodSearchHandler", httpResponse);
     }
 }
 
-const dateSearchHandler = (queryResult, httpResponse) => {
+const dateSearchHandler = (queryResult, httpResponse, isSecondIntent = false) => {
     let dateTime = queryResult.parameters["date-time"] ? queryResult.parameters["date-time"] : "";
     let textResponse = ""
+    let textResponseArray = []
 
     if(dateTime){
         if(typeof dateTime == 'string'){
@@ -320,31 +387,66 @@ const dateSearchHandler = (queryResult, httpResponse) => {
             }
         }
 
-        DB.searchMinutesByPeiod(dateTime, (err, results) => {
-            if(err){
-                return webhookReply(`The are error occur in database: ${err}`, httpResponse)
-            }
-
-            updateConext('dateSearch', {
-                "date-time":{
-                    startDate: dateTime.startDate, 
-                    endDate: dateTime.endDate
+        if(!isSecondIntent){
+            DB.searchMinutesByPeiod(dateTime, (err, results) => {
+                if(err){
+                    return webhookReply(`The are error occur in database: ${err}`, httpResponse)
                 }
-            }, results.length, queryResult.queryText, textResponse)
-            
-            if(results.length == 0){
-                return webhookReply(`There are no result within the period \`${startDate} - ${endDate}\`, please search again.`, httpResponse)
-            }
-            if(results.length > 1 && !(contexts.length > 2 && contexts[contexts.length - 2].intent == 'tooMuch - no') ){
-                textResponse = `${results.length} results was found. Do you want to narrow down result?`
-                return webhookReply(textResponse, httpResponse)
+    
+                updateConext('dateSearch', {
+                    "date-time":{
+                        startDate: dateTime.startDate, 
+                        endDate: dateTime.endDate
+                    }
+                }, results.length, queryResult.queryText, textResponse)
+                
+                if(results.length == 0){
+                    return webhookReply(`There are no result within the period \`${startDate} - ${endDate}\`, please search again.`, httpResponse)
+                }
+                if(results.length > 1 && !(contexts.length > 2 && contexts[contexts.length - 2].intent == 'tooMuch - no') ){
+                    textResponse = `${results.length} results was found. Do you want to narrow down result? (Yes/NO)`
+                    return webhookReply(textResponse, httpResponse)
+                }
+    
+                // textResponse = `The results are showing below page:
+                //                 https://ai-fyp-meeting-emk.herokuapp.com/query?intent=dateSearch&startDate=${period.startDate}&endDate=${period.endDate}`
+                textResponseArray.push(`${results.length} results was found. The results are showing below page:`)
+                textResponseArray.push(`https://ai-fyp-meeting-emk.herokuapp.com/query?intent=dateSearch&startDate=${period.startDate}&endDate=${period.endDate}`)
+
+                return webhookReply(textResponseArray, httpResponse)
+            })
+        }else{
+            let payload = {
+                period: dateTime,
+                keyword: queryResult.secondSearchParameters.keyword
             }
 
-            textResponse = `The results are showing below page:
-                            https://ai-fyp-meeting-emk.herokuapp.com/query?intent=dateSearch&startDate=${period.startDate}&endDate=${period.endDate}`
+            DB.searchMinutesByAnyKeywordPeriod(payload, (err, results) => {
+                if(err){
+                    return webhookReply(`The are error occur in database: ${err}`, httpResponse)
+                }
+    
+                updateConext('dateSearch', {
+                    "date-time":{
+                        startDate: dateTime.startDate, 
+                        endDate: dateTime.endDate
+                    },
+                    keyword: payload.keyword
+                }, results.length, queryResult.queryText, textResponse)
+                
+                if(results.length == 0){
+                    return webhookReply(`There are no result within the period \`${startDate} - ${endDate}\` and keyword \`${payload.keyword}\`, please search again.`, httpResponse)
+                }
+    
+                // textResponse = `The results are showing below page:
+                //                 https://ai-fyp-meeting-emk.herokuapp.com/query?intent=dateSearch&startDate=${period.startDate}&endDate=${period.endDate}`
+                textResponseArray.push(`${results.length} results was found. The results are showing below page:`)
+                textResponseArray.push(`https://ai-fyp-meeting-emk.herokuapp.com/query?intent=dateSearch&startDate=${period.startDate}&endDate=${period.endDate}&keyword=${payload.keyword}&isSecondIntent=1`)
 
-            return webhookReply(textResponse, httpResponse)
-        })
+                return webhookReply(textResponseArray, httpResponse)
+            })
+        }
+       
     }else{
         return webhookReply("No date time detect in periodSearchHandler", httpResponse);
     }
@@ -554,7 +656,7 @@ const resetContext = (queryResult, httpResponse) => {
 const intentSwitchHandler = (intent, queryResult, res) => {
     switch(intent){
         case 'keywordSearch':
-            keywordSearchHandler(queryResult, res, false);
+            keywordSearchHandler(queryResult, res);
             break;
         case 'locationSearch':
             addressSearchHandler(queryResult, res)
@@ -602,13 +704,13 @@ const seconIntentSwitchHandler = (firstIntent, previousParameter, queryResult, r
             addressSearchHandler(processedQueryResult, res, true)
             break;
         case 'numberingSearch':
-            numberingSearchHandler(queryResult, res)
+            numberingSearchHandler(processedQueryResult, res, true)
             break;
         case 'periodSearch':
-            periodSearchHandler(queryResult, res)
+            periodSearchHandler(processedQueryResult, res, true)
             break;
         case 'dateSearch':
-            dateSearchHandler(queryResult, res)
+            dateSearchHandler(processedQueryResult, res, true)
             break;
         default:
             return webhookReplyToTriggerIntent('backToWelcome', httpResponse);

@@ -98,27 +98,34 @@ module.exports = class DB{
         }
 
         this.searchMinutesByAnyKeywordPeriod = (payload, callback) => {
-            let search = { 
-                $text: { 
-                    $search: payload.keyword 
-                }
-            } 
-            let period = {
-                $and: [
-                    {
-                        date:{
-                            $gte: new Date(payload.period.startDate).getTime()
-                        },
-                    },
-                    {
-                        date:{
-                            $lte: new Date(payload.period.endDate).getTime()
-                        },
+            let aggregateArray = [
+                {
+                    $match: {
+                        $and:[
+                            {
+                                $text: {
+                                        $search: payload.keyword 
+                                    }
+                            },
+                            {
+                                date:{
+                                    $gte: new Date(payload.period.startDate).getTime(),
+                                    $lte: new Date(payload.period.endDate).getTime()
+                                }
+                            }
+                        ]
                     }
-                ]
-            }
+                },
+                {
+                    $sort: {
+                        score: {
+                            meta: "textScore"
+                        }
+                    }
+                }
+            ]
            
-            return database.collection("minutes").find(search, period).project({ score: { $meta: "textScore" } }).sort( { score: { $meta: "textScore" } } ).toArray((error, items) => {
+            return database.collection("minutes").aggregate(aggregateArray).toArray((error, items) => {
                 callback(error, items);
             })
         }
@@ -151,12 +158,59 @@ module.exports = class DB{
                     $project: {
                         results: 0
                     }
+                },
+                {
+                    $sort: {
+                        score: {
+                            meta: "textScore"
+                        }
+                    }
                 }
             ];
 
             return database.collection("minutes").aggregate(aggregate).toArray((error, items) => {
                 callback(error, items);
             })
+        }
+
+        this.searchMinutesByNumberingAndKeyword = (payload, callback) => {
+            let search = {
+                $match: {
+                    $text: {
+                        $search: payload.keyword
+                    }
+                }
+            }
+            let sorting = {
+                $sort: {
+                    numberOfMeeting: -1
+                }
+            }
+            let aggregateArray = [search, sorting]
+
+            if(payload.timeWord && !payload.number){
+                let limit = {
+                    $limit: 1
+                }
+                aggregateArray.push(limit)
+                
+                return database.collection("minutes").aggregate(aggregateArray).toArray((error, items) => {
+                    callback(error, items);
+                })
+            }else if(payload.timeWord && payload.number){
+                let limit = {
+                    $limit: payload.number
+                }
+                aggregateArray.push(limit)
+
+                return database.collection("minutes").aggregate(aggregateArray).toArray((error, items) => {
+                    callback(error, items);
+                })
+            }else{
+                return database.collection("minutes").aggregate(aggregateArray).toArray((error, items) => {
+                    callback(error, items);
+                })
+            }
         }
     }
 }
