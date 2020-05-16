@@ -163,11 +163,10 @@ const keywordSearchHandler = (queryResult, httpResponse, isSecondIntent = false)
                                             "type": "", // Default icon is arrow
                                             "color": "#FF9800"
                                         },
-                                        "text": "Button text",
+                                        "text": "Yes",
+                                        "link": "#",
                                         "event": {
-                                            "name": "",
-                                            "languageCode": "",
-                                            "parameters": {}
+                                            "name": "tooMuchYes",
                                         }
                                     },
                                     {
@@ -176,11 +175,10 @@ const keywordSearchHandler = (queryResult, httpResponse, isSecondIntent = false)
                                             "type": "", // Default icon is arrow
                                             "color": "#FF9800"
                                         },
-                                        "text": "Button text 22222",
+                                        "text": "No",
+                                        "link": "#",
                                         "event": {
-                                            "name": "",
-                                            "languageCode": "",
-                                            "parameters": {}
+                                            "name": "tooMuchNo",
                                         }
                                     }
                                 ]
