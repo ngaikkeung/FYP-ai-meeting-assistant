@@ -261,6 +261,20 @@ const keywordSearchHandler = (queryResult, httpResponse, isSecondIntent = false)
                                             "link": `https://ai-fyp-meeting-emk.herokuapp.com/query?intent=keywordSearch&keyword1=${keywords[0]}&keyword2=${keywords[1]}&isSecondIntent=1`
                                         }
                                     ]
+                                },
+                                {
+                                    "type": "button",
+                                    "icon": {
+                                        "type": "", // Default icon is arrow
+                                        "color": "#FF9800"
+                                    },
+                                    "text": "Result page btn",
+                                    "link": `https://ai-fyp-meeting-emk.herokuapp.com/query?intent=keywordSearch&keyword1=${keywords[0]}&keyword2=${keywords[1]}&isSecondIntent=1`,
+                                    "event": {
+                                        "name": "test",
+                                        "languageCode": "en",
+                                        "parameters": {}
+                                    }
                                 }
                             ]
                         ]
