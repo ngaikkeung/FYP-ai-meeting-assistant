@@ -167,6 +167,8 @@ const keywordSearchHandler = (queryResult, httpResponse, isSecondIntent = false)
                                         "link": "#",
                                         "event": {
                                             "name": "tooMuchYes",
+                                            "languageCode": "",
+                                            "parameters": {}
                                         }
                                     },
                                     {
@@ -179,6 +181,8 @@ const keywordSearchHandler = (queryResult, httpResponse, isSecondIntent = false)
                                         "link": "#",
                                         "event": {
                                             "name": "tooMuchNo",
+                                            "languageCode": "",
+                                            "parameters": {}
                                         }
                                     }
                                 ]
