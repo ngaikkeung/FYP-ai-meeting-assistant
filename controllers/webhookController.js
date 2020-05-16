@@ -49,9 +49,82 @@ const webhookReply = (responseText, httpResponse) => {
     console.log("Webhook response: ", JSON.stringify(webhookResponse));
     return httpResponse.json(webhookResponse)
 }
-const wehookReplyRich = (text, payload, httpResponse) => {
+const wehookReplyList = (text, payload, httpResponse) => {
     let  webhookResponse = {
-        "fulfillmentMessages": [text, payload]
+        "fulfillmentMessages": [
+            {
+                "text": {
+                    "text": [text]
+                }
+            },
+            {
+                payload:{
+                    "richContent": [
+                        [
+                            {
+                                "type": "list",
+                                "title": "Yes",
+                                "subtitle": "",
+                                "event": {
+                                    "name": "tooMuchYes",
+                                    "languageCode": "en",
+                                    "parameters": {}
+                                }
+                            },
+                            {
+                                "type": "divider"
+                            },
+                            {
+                                "type": "list",
+                                "title": "No",
+                                "subtitle": "",
+                                "event": {
+                                    "name": "tooMuchNo",
+                                    "languageCode": "en",
+                                    "parameters": {}
+                                }
+                            }
+                        ]
+                    ]
+                }
+            }
+        ]
+    }
+    
+    console.log("Webhook response: ", JSON.stringify(webhookResponse));
+    return httpResponse.json(webhookResponse) 
+}
+const wehookReplyChip = (resultLink, httpResponse) => {
+    let  webhookResponse = {
+        "fulfillmentMessages": [
+            {
+                "text": {
+                    "text": [`The results are showing below page.`]
+                }
+            },
+            {
+                "payload": {
+                    "richContent": [
+                        [
+                            {
+                                "type": "chips",
+                                "options": [
+                                    {
+                                        "text": "Result page",
+                                        "image": {
+                                            "src": {
+                                                "rawUrl": ""
+                                            }
+                                        },
+                                        "link": resultLink
+                                    }
+                                ]
+                            },
+                        ]
+                    ]
+                }
+            }
+        ]
     }
     
     console.log("Webhook response: ", JSON.stringify(webhookResponse));
@@ -134,8 +207,7 @@ const updateConext = (intent, parameters, queryResult, userResponse, backendResp
 const keywordSearchHandler = (queryResult, httpResponse, isSecondIntent = false) => {
     let keyword = queryResult.parameters.keyword ? queryResult.parameters.keyword : "";
     let textResponse = ""
-    let textResponseArray = [];
-    let richPayload = {};
+
     if(keyword){
         if(!isSecondIntent){
             DB.searchMinutesByAnyKeyword(keyword, (err, results) => {
@@ -153,73 +225,11 @@ const keywordSearchHandler = (queryResult, httpResponse, isSecondIntent = false)
                 if(results.length > 1 && !(contexts.length > 2 && contexts[contexts.length - 2].intent == 'tooMuch - no') ){
                     // textResponse = `${results.length} results was found. Do you want to narrow down result? (Yes / No)`
                     // return webhookReply(textResponse, httpResponse)
-                    textResponse =  {
-                        "text": {
-                            "text": [`${results.length} results was found.\n Do you want to narrow down result? `]
-                        }
-                    }
-                    richPayload = {
-                        payload:{
-                            "richContent": [
-                                [
-                                    {
-                                        "type": "list",
-                                        "title": "Yes",
-                                        "subtitle": "",
-                                        "event": {
-                                            "name": "tooMuchYes",
-                                            "languageCode": "en",
-                                            "parameters": {}
-                                        }
-                                    },
-                                    {
-                                        "type": "divider"
-                                    },
-                                    {
-                                        "type": "list",
-                                        "title": "No",
-                                        "subtitle": "",
-                                        "event": {
-                                            "name": "tooMuchNo",
-                                            "languageCode": "en",
-                                            "parameters": {}
-                                        }
-                                    }
-                                ]
-                            ]
-                        }
-                      }
-                    return wehookReplyRich(textResponse, richPayload, httpResponse)
+                  
+                    return wehookReplyList(`${results.length} results was found.\n Do you want to narrow down result? `, httpResponse)
                 }
 
-                textResponse =  {
-                    "text": {
-                        "text": [`The results are showing below page.`]
-                    }
-                }
-                richPayload = {
-                    payload:{
-                        "richContent": [
-                            [
-                                {
-                                    "type": "chips",
-                                    "options": [
-                                        {
-                                            "text": "Result page",
-                                            "image": {
-                                                "src": {
-                                                    "rawUrl": ""
-                                                }
-                                            },
-                                            "link": `https://ai-fyp-meeting-emk.herokuapp.com/query?intent=keywordSearch&keyword=${keyword}`
-                                        }
-                                    ]
-                                }
-                            ]
-                        ]
-                    }
-                }
-                return wehookReplyRich(textResponse, richPayload, httpResponse)
+                return wehookReplyChip(`https://ai-fyp-meeting-emk.herokuapp.com/query?intent=keywordSearch&keyword=${keyword}`, httpResponse)
             })
         }else{
             let keywords = [keyword, contexts[contexts.length - 2].parameters.keyword]
@@ -239,48 +249,7 @@ const keywordSearchHandler = (queryResult, httpResponse, isSecondIntent = false)
     
                 // textResponse = `The results are showing below page:
                 //                 https://ai-fyp-meeting-emk.herokuapp.com/query?intent=keywordSearch&keyword1=${keywords[0]}&keyword2=${keywords[1]}&isSecondIntent=1`
-                textResponse =  {
-                    "text": {
-                        "text": [`The results are showing below page.`]
-                    }
-                }
-                richPayload = {
-                    payload:{
-                        "richContent": [
-                            [
-                                {
-                                    "type": "chips",
-                                    "options": [
-                                        {
-                                            "text": "Result page",
-                                            "image": {
-                                                "src": {
-                                                    "rawUrl": ""
-                                                }
-                                            },
-                                            "link": `https://ai-fyp-meeting-emk.herokuapp.com/query?intent=keywordSearch&keyword1=${keywords[0]}&keyword2=${keywords[1]}&isSecondIntent=1`
-                                        }
-                                    ]
-                                },
-                                {
-                                    "type": "button",
-                                    "icon": {
-                                        "type": "", // Default icon is arrow
-                                        "color": "#FF9800"
-                                    },
-                                    "text": "Result page btn",
-                                    "link": `https://ai-fyp-meeting-emk.herokuapp.com/query?intent=keywordSearch&keyword1=${keywords[0]}&keyword2=${keywords[1]}&isSecondIntent=1`,
-                                    "event": {
-                                        "name": "test",
-                                        "languageCode": "en",
-                                        "parameters": {}
-                                    }
-                                }
-                            ]
-                        ]
-                    }
-                }
-                return wehookReplyRich(textResponse, richPayload, httpResponse)
+                return wehookReplyChip(`https://ai-fyp-meeting-emk.herokuapp.com/query?intent=keywordSearch&keyword1=${keywords[0]}&keyword2=${keywords[1]}&isSecondIntent=1`, httpResponse)
             })
         }
     }else{
