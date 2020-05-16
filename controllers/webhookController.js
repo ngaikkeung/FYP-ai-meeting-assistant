@@ -150,26 +150,24 @@ const keywordSearchHandler = (queryResult, httpResponse, isSecondIntent = false)
                     // textResponse = `${results.length} results was found. Do you want to narrow down result? (Yes / No)`
                     // return webhookReply(textResponse, httpResponse)
                     let richPayload = {
-                        payload: {
-                            "richContent": [
-                                [
-                                  {
-                                    "type": "button",
-                                    "icon": {
-                                      "type": "", // Default icon is arrow
-                                      "color": "#FF9800"
-                                    },
-                                    "text": "Button text",
-                                    "link": "https://example.com",
-                                    "event": {
-                                      "name": "",
-                                      "languageCode": "",
-                                      "parameters": {}
-                                    }
-                                  }
-                                ]
-                              ]
-                        }
+                        "richContent": [
+                            [
+                                {
+                                "type": "button",
+                                "icon": {
+                                    "type": "", // Default icon is arrow
+                                    "color": "#FF9800"
+                                },
+                                "text": "Button text",
+                                "link": "https://example.com",
+                                "event": {
+                                    "name": "",
+                                    "languageCode": "",
+                                    "parameters": {}
+                                }
+                                }
+                            ]
+                            ]
                     }
                     return wehookReplyRich(richPayload, httpResponse)
                 }
