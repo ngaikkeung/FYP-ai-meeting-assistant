@@ -162,7 +162,7 @@ module.exports = class DB{
                 {
                     $sort: {
                         score: {
-                            meta: "textScore"
+                            $meta: "textScore"
                         }
                     }
                 }
