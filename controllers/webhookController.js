@@ -21,17 +21,31 @@ exports.handle = (req, res) => {
 }
 
 const webhookReply = (responseText, httpResponse) => {
-    // webhook response
-    webhookResponse = {
+    let  webhookResponse = {
         "fulfillmentText": "", // Default response from webhook.
         "fulfillmentMessages": [
             {
                 "text": {
-                    "text": [responseText]
+                    "text": []
                 }
             }
         ]
     };
+
+    if(typeof responseText == 'string'){
+
+       webhookResponse.fulfillmentMessages[0].text.text.push(responseText);
+       
+    }else if(typeof responseText == 'object' && responseText.length > 0){
+        
+        for(let value of responseText){
+            webhookResponse.fulfillmentMessages[0].text.text.push(value);
+        }
+        
+    }else{
+        console.error("Webhook response text type Error.");
+    }
+    
 
     console.log("Webhook response: ", JSON.stringify(webhookResponse));
     return httpResponse.json(webhookResponse)
@@ -129,7 +143,7 @@ const keywordSearchHandler = (queryResult, httpResponse, isSecondIntent) => {
                     return webhookReply(`There are no result about \`${keyword}\`, please search with other keyword.`, httpResponse)
                 }
                 if(results.length > 1 && !(contexts.length > 2 && contexts[contexts.length - 2].intent == 'tooMuch - no') ){
-                    textResponse = `${results.length} results was found. Do you want to narrow down result?`
+                    textResponse = `${results.length} results was found. Do you want to narrow down result? (Yes / No)`
                     return webhookReply(textResponse, httpResponse)
                 }
     
@@ -140,7 +154,7 @@ const keywordSearchHandler = (queryResult, httpResponse, isSecondIntent) => {
             })
         }else{
             let keywords = [keyword, contexts[contexts.length - 2].parameters.keyword]
-            
+
             DB.searchMinutesByTwoKeyword(keywords, (err, results) => {
                 if(err){
                     return webhookReply(`There are error occur in database: ${err}`, httpResponse)
@@ -167,10 +181,8 @@ const keywordSearchHandler = (queryResult, httpResponse, isSecondIntent) => {
 
 const addressSearchHandler = (queryResult, httpResponse) => {
     let address = queryResult.parameters.address ? queryResult.parameters.address : "";
-    let parameters = {
-        keyword: address
-    }
-    let textResponse = ""
+    let textResponse = "";
+    let textResponseArray = [];
 
     if(keyword){
         DB.searchMinutesByAnyKeyword(address, (err, results) => {
@@ -179,7 +191,7 @@ const addressSearchHandler = (queryResult, httpResponse) => {
             }
 
             updateConext('locationSearch', {
-                    address: keyword
+                    address: address
                 }, results.length, queryResult.queryText, textResponse)
 
             if(results.length == 0){
@@ -187,14 +199,16 @@ const addressSearchHandler = (queryResult, httpResponse) => {
             }
             
             if(results.length > 1 && !(contexts.length > 2 && contexts[contexts.length - 2].intent == 'tooMuch - no') ){
-                textResponse = `${results.length} results was found. Do you want to narrow down result?`
+                textResponse = `${results.length} results was found. Do you want to narrow down result? (Yes / No)`
                 return webhookReply(textResponse, httpResponse)
             }
 
-            textResponse = `The results are showing below page:
-                            https://ai-fyp-meeting-emk.herokuapp.com/query?intent=locationSearch&address=${address}`
-            
-            return webhookReply(textResponse, httpResponse)
+            // textResponse = `${results} results was found. The results are showing below page:
+            //                 https://ai-fyp-meeting-emk.herokuapp.com/query?intent=locationSearch&address=${address}`
+            textResponseArray.push(`${results} results was found. The results are showing below page:`)
+            textResponseArray.push(`https://ai-fyp-meeting-emk.herokuapp.com/query?intent=locationSearch&address=${address}`);
+
+            return webhookReply(textResponseArray, httpResponse)
         })
     }else{
         return webhookReply("No address detect in keywordSearchHandler", httpResponse);
