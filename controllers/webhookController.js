@@ -155,7 +155,7 @@ const keywordSearchHandler = (queryResult, httpResponse, isSecondIntent = false)
                     // return webhookReply(textResponse, httpResponse)
                     textResponse =  {
                         "text": {
-                            "text": [`${results.length} results was found. Do you want to narrow down result? `]
+                            "text": [`${results.length} results was found.\n Do you want to narrow down result? `]
                         }
                     }
                     // let richPayload = {
@@ -195,33 +195,35 @@ const keywordSearchHandler = (queryResult, httpResponse, isSecondIntent = false)
                     //     }
                     // }
                     let richPayload = {
-                        "richContent": [
-                            [
-                              {
-                                "type": "list",
-                                "title": "Yes",
-                                "subtitle": "",
-                                "event": {
-                                  "name": "tooMuchYes",
-                                  "languageCode": "en",
-                                  "parameters": {}
-                                }
-                              },
-                              {
-                                "type": "divider"
-                              },
-                              {
-                                "type": "list",
-                                "title": "No",
-                                "subtitle": "",
-                                "event": {
-                                  "name": "tooMuchNo",
-                                  "languageCode": "en",
-                                  "parameters": {}
-                                }
-                              }
-                            ]
-                          ]
+                        payload:{
+                            "richContent": [
+                                [
+                                  {
+                                    "type": "list",
+                                    "title": "Yes",
+                                    "subtitle": "",
+                                    "event": {
+                                      "name": "tooMuchYes",
+                                      "languageCode": "en",
+                                      "parameters": {}
+                                    }
+                                  },
+                                  {
+                                    "type": "divider"
+                                  },
+                                  {
+                                    "type": "list",
+                                    "title": "No",
+                                    "subtitle": "",
+                                    "event": {
+                                      "name": "tooMuchNo",
+                                      "languageCode": "en",
+                                      "parameters": {}
+                                    }
+                                  }
+                                ]
+                              ]
+                        }
                       }
                     return wehookReplyRich(textResponse, richPayload, httpResponse)
                 }
