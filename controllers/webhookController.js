@@ -158,42 +158,71 @@ const keywordSearchHandler = (queryResult, httpResponse, isSecondIntent = false)
                             "text": [`${results.length} results was found. Do you want to narrow down result? `]
                         }
                     }
+                    // let richPayload = {
+                    //     "payload": {
+                    //         "richContent": [
+                    //             [
+                    //                 {
+                    //                     "type": "button",
+                    //                     "icon": {
+                    //                         "type": "", // Default icon is arrow
+                    //                         "color": "#FF9800"
+                    //                     },
+                    //                     "text": "Yes",
+                    //                     "link": "#",
+                    //                     "event": {
+                    //                         "name": "tooMuchYes",
+                    //                         "languageCode": "en",
+                    //                         "parameters": {}
+                    //                     }
+                    //                 },
+                    //                 {
+                    //                     "type": "button",
+                    //                     "icon": {
+                    //                         "type": "", // Default icon is arrow
+                    //                         "color": "#FF9800"
+                    //                     },
+                    //                     "text": "No",
+                    //                     "link": "#",
+                    //                     "event": {
+                    //                         "name": "tooMuchNo",
+                    //                         "languageCode": "en",
+                    //                         "parameters": {}
+                    //                     }
+                    //                 }
+                    //             ]
+                    //         ]
+                    //     }
+                    // }
                     let richPayload = {
-                        "payload": {
-                            "richContent": [
-                                [
-                                    {
-                                        "type": "button",
-                                        "icon": {
-                                            "type": "", // Default icon is arrow
-                                            "color": "#FF9800"
-                                        },
-                                        "text": "Yes",
-                                        "link": "#",
-                                        "event": {
-                                            "name": "tooMuchYes",
-                                            "languageCode": "en",
-                                            "parameters": {}
-                                        }
-                                    },
-                                    {
-                                        "type": "button",
-                                        "icon": {
-                                            "type": "", // Default icon is arrow
-                                            "color": "#FF9800"
-                                        },
-                                        "text": "No",
-                                        "link": "#",
-                                        "event": {
-                                            "name": "tooMuchNo",
-                                            "languageCode": "en",
-                                            "parameters": {}
-                                        }
-                                    }
-                                ]
+                        "richContent": [
+                            [
+                              {
+                                "type": "list",
+                                "title": "Yes",
+                                "subtitle": "",
+                                "event": {
+                                  "name": "tooMuchYes",
+                                  "languageCode": "en",
+                                  "parameters": {}
+                                }
+                              },
+                              {
+                                "type": "divider"
+                              },
+                              {
+                                "type": "list",
+                                "title": "No",
+                                "subtitle": "",
+                                "event": {
+                                  "name": "tooMuchNo",
+                                  "languageCode": "en",
+                                  "parameters": {}
+                                }
+                              }
                             ]
-                        }
-                    }
+                          ]
+                      }
                     return wehookReplyRich(textResponse, richPayload, httpResponse)
                 }
     
