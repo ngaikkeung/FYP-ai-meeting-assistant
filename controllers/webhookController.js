@@ -565,7 +565,7 @@ const yesHandler = (queryResult, httpResponse) => {
     let intent = 'tooMuch - yes';
     let userResponse = queryResult.queryText;
 
-    if(contexts.length > 0){
+    if(contexts.length > 0 && contexts[contexts.length - 1].queryResult > 0){
         let backendResponse = 'Please enter another keyword(s) for narrow down search.'
         updateConext(intent, null, null , userResponse, backendResponse)
 
