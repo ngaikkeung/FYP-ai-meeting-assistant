@@ -49,7 +49,7 @@ const webhookReply = (responseText, httpResponse) => {
     console.log("Webhook response: ", JSON.stringify(webhookResponse));
     return httpResponse.json(webhookResponse)
 }
-const wehookReplyList = (text, payload, httpResponse) => {
+const wehookReplyList = (text, httpResponse) => {
     let  webhookResponse = {
         "fulfillmentMessages": [
             {
