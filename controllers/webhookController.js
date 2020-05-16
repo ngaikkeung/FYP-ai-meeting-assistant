@@ -49,9 +49,9 @@ const webhookReply = (responseText, httpResponse) => {
     console.log("Webhook response: ", JSON.stringify(webhookResponse));
     return httpResponse.json(webhookResponse)
 }
-const wehookReplyRich = (payload, httpResponse) => {
+const wehookReplyRich = (text, payload, httpResponse) => {
     let  webhookResponse = {
-        "fulfillmentMessages": [payload]
+        "fulfillmentMessages": [text, payload]
     }
     
     console.log("Webhook response: ", JSON.stringify(webhookResponse));
@@ -151,8 +151,13 @@ const keywordSearchHandler = (queryResult, httpResponse, isSecondIntent = false)
                     return webhookReply(`There are no result about \`${keyword}\`, please search with other keyword.`, httpResponse)
                 }
                 if(results.length > 1 && !(contexts.length > 2 && contexts[contexts.length - 2].intent == 'tooMuch - no') ){
-                    // textResponse = `${results.length} results was found. Do you want to narrow down result? (Yes / No)`
+                    textResponse = `${results.length} results was found. Do you want to narrow down result? (Yes / No)`
                     // return webhookReply(textResponse, httpResponse)
+                    let textResponse =  {
+                        "text": {
+                            "text": [`${results.length} results was found. Do you want to narrow down result? `]
+                        }
+                    }
                     let richPayload = {
                         "payload": {
                             "richContent": [
@@ -189,7 +194,7 @@ const keywordSearchHandler = (queryResult, httpResponse, isSecondIntent = false)
                             ]
                         }
                     }
-                    return wehookReplyRich(richPayload, httpResponse)
+                    return wehookReplyRich(textResponse, richPayload, httpResponse)
                 }
     
                 textResponse = `The results are showing below page:
