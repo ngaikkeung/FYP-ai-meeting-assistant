@@ -151,9 +151,9 @@ const keywordSearchHandler = (queryResult, httpResponse, isSecondIntent = false)
                     return webhookReply(`There are no result about \`${keyword}\`, please search with other keyword.`, httpResponse)
                 }
                 if(results.length > 1 && !(contexts.length > 2 && contexts[contexts.length - 2].intent == 'tooMuch - no') ){
-                    textResponse = `${results.length} results was found. Do you want to narrow down result? (Yes / No)`
+                    // textResponse = `${results.length} results was found. Do you want to narrow down result? (Yes / No)`
                     // return webhookReply(textResponse, httpResponse)
-                    let textResponse =  {
+                    textResponse =  {
                         "text": {
                             "text": [`${results.length} results was found. Do you want to narrow down result? `]
                         }
