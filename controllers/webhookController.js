@@ -22,7 +22,6 @@ exports.handle = (req, res) => {
 
 const webhookReply = (responseText, httpResponse) => {
     let  webhookResponse = {
-        "fulfillmentText": "", // Default response from webhook.
         "fulfillmentMessages": [
             {
                 "text": {
@@ -51,6 +50,9 @@ const webhookReply = (responseText, httpResponse) => {
     return httpResponse.json(webhookResponse)
 }
 const wehookReplyRich = (payload, httpResponse) => {
+    let  webhookResponse = {
+        "fulfillmentMessages": [payload]
+    };
     return httpResponse.json(payload) 
 }
 
@@ -150,24 +152,26 @@ const keywordSearchHandler = (queryResult, httpResponse, isSecondIntent = false)
                     // textResponse = `${results.length} results was found. Do you want to narrow down result? (Yes / No)`
                     // return webhookReply(textResponse, httpResponse)
                     let richPayload = {
-                        "richContent": [
-                            [
-                                {
-                                "type": "button",
-                                "icon": {
-                                    "type": "", // Default icon is arrow
-                                    "color": "#FF9800"
-                                },
-                                "text": "Button text",
-                                "link": "https://example.com",
-                                "event": {
-                                    "name": "",
-                                    "languageCode": "",
-                                    "parameters": {}
-                                }
-                                }
+                        payload: {
+                            "richContent": [
+                                [
+                                    {
+                                    "type": "button",
+                                    "icon": {
+                                        "type": "", // Default icon is arrow
+                                        "color": "#FF9800"
+                                    },
+                                    "text": "Button text",
+                                    "link": "https://example.com",
+                                    "event": {
+                                        "name": "",
+                                        "languageCode": "",
+                                        "parameters": {}
+                                    }
+                                    }
+                                ]
                             ]
-                            ]
+                        }
                     }
                     return wehookReplyRich(richPayload, httpResponse)
                 }
