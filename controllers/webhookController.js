@@ -135,7 +135,7 @@ const keywordSearchHandler = (queryResult, httpResponse, isSecondIntent = false)
     let keyword = queryResult.parameters.keyword ? queryResult.parameters.keyword : "";
     let textResponse = ""
     let textResponseArray = [];
-
+    let richPayload = {};
     if(keyword){
         if(!isSecondIntent){
             DB.searchMinutesByAnyKeyword(keyword, (err, results) => {
@@ -158,80 +158,68 @@ const keywordSearchHandler = (queryResult, httpResponse, isSecondIntent = false)
                             "text": [`${results.length} results was found.\n Do you want to narrow down result? `]
                         }
                     }
-                    // let richPayload = {
-                    //     "payload": {
-                    //         "richContent": [
-                    //             [
-                    //                 {
-                    //                     "type": "button",
-                    //                     "icon": {
-                    //                         "type": "", // Default icon is arrow
-                    //                         "color": "#FF9800"
-                    //                     },
-                    //                     "text": "Yes",
-                    //                     "link": "#",
-                    //                     "event": {
-                    //                         "name": "tooMuchYes",
-                    //                         "languageCode": "en",
-                    //                         "parameters": {}
-                    //                     }
-                    //                 },
-                    //                 {
-                    //                     "type": "button",
-                    //                     "icon": {
-                    //                         "type": "", // Default icon is arrow
-                    //                         "color": "#FF9800"
-                    //                     },
-                    //                     "text": "No",
-                    //                     "link": "#",
-                    //                     "event": {
-                    //                         "name": "tooMuchNo",
-                    //                         "languageCode": "en",
-                    //                         "parameters": {}
-                    //                     }
-                    //                 }
-                    //             ]
-                    //         ]
-                    //     }
-                    // }
-                    let richPayload = {
+                    richPayload = {
                         payload:{
                             "richContent": [
                                 [
-                                  {
-                                    "type": "list",
-                                    "title": "Yes",
-                                    "subtitle": "",
-                                    "event": {
-                                      "name": "tooMuchYes",
-                                      "languageCode": "en",
-                                      "parameters": {}
+                                    {
+                                        "type": "list",
+                                        "title": "Yes",
+                                        "subtitle": "",
+                                        "event": {
+                                            "name": "tooMuchYes",
+                                            "languageCode": "en",
+                                            "parameters": {}
+                                        }
+                                    },
+                                    {
+                                        "type": "divider"
+                                    },
+                                    {
+                                        "type": "list",
+                                        "title": "No",
+                                        "subtitle": "",
+                                        "event": {
+                                            "name": "tooMuchNo",
+                                            "languageCode": "en",
+                                            "parameters": {}
+                                        }
                                     }
-                                  },
-                                  {
-                                    "type": "divider"
-                                  },
-                                  {
-                                    "type": "list",
-                                    "title": "No",
-                                    "subtitle": "",
-                                    "event": {
-                                      "name": "tooMuchNo",
-                                      "languageCode": "en",
-                                      "parameters": {}
-                                    }
-                                  }
                                 ]
-                              ]
+                            ]
                         }
                       }
                     return wehookReplyRich(textResponse, richPayload, httpResponse)
                 }
-    
-                textResponse = `The results are showing below page:
-                                https://ai-fyp-meeting-emk.herokuapp.com/query?intent=keywordSearch&keyword=${keyword}`
-    
-                return webhookReply(textResponse, httpResponse)
+
+                textResponse =  {
+                    "text": {
+                        "text": [`The results are showing below page.`]
+                    }
+                }
+                richPayload = {
+                    payload:{
+                        "richContent": [
+                            [
+                                {
+                                    "type": "chips",
+                                    "options": [
+                                        {
+                                            "text": "Result page",
+                                            "image": {
+                                                "src": {
+                                                    "rawUrl": ""
+                                                }
+                                            },
+                                            "link": `https://ai-fyp-meeting-emk.herokuapp.com/query?intent=keywordSearch&keyword=${keyword}`
+                                        }
+                                    ]
+                                }
+                            ]
+                        ]
+                    }
+                }
+                return wehookReplyRich(textResponse, richPayload, httpResponse)
             })
         }else{
             let keywords = [keyword, contexts[contexts.length - 2].parameters.keyword]
@@ -251,10 +239,34 @@ const keywordSearchHandler = (queryResult, httpResponse, isSecondIntent = false)
     
                 // textResponse = `The results are showing below page:
                 //                 https://ai-fyp-meeting-emk.herokuapp.com/query?intent=keywordSearch&keyword1=${keywords[0]}&keyword2=${keywords[1]}&isSecondIntent=1`
-                textResponseArray.push(`${results.length} results was found. The results are showing below page:`)
-                textResponseArray.push(`https://ai-fyp-meeting-emk.herokuapp.com/query?intent=keywordSearch&keyword1=${keywords[0]}&keyword2=${keywords[1]}&isSecondIntent=1`)
-
-                return webhookReply(textResponseArray, httpResponse)
+                textResponse =  {
+                    "text": {
+                        "text": [`The results are showing below page.`]
+                    }
+                }
+                richPayload = {
+                    payload:{
+                        "richContent": [
+                            [
+                                {
+                                    "type": "chips",
+                                    "options": [
+                                        {
+                                            "text": "Result page",
+                                            "image": {
+                                                "src": {
+                                                    "rawUrl": ""
+                                                }
+                                            },
+                                            "link": `https://ai-fyp-meeting-emk.herokuapp.com/query?intent=keywordSearch&keyword1=${keywords[0]}&keyword2=${keywords[1]}&isSecondIntent=1`
+                                        }
+                                    ]
+                                }
+                            ]
+                        ]
+                    }
+                }
+                return wehookReplyRich(textResponse, richPayload, httpResponse)
             })
         }
     }else{
