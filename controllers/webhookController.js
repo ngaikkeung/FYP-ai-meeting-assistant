@@ -179,37 +179,61 @@ const keywordSearchHandler = (queryResult, httpResponse, isSecondIntent) => {
     }
 }
 
-const addressSearchHandler = (queryResult, httpResponse) => {
+const addressSearchHandler = (queryResult, httpResponse, isSecondIntent) => {
     let address = queryResult.parameters.address ? queryResult.parameters.address : "";
     let textResponse = "";
     let textResponseArray = [];
 
     if(keyword){
-        DB.searchMinutesByAnyKeyword(address, (err, results) => {
-            if(err){
-                return webhookReply(`The are error occur in database: ${err}`, httpResponse)
-            }
+        if(!isSecondIntent){
+            DB.searchMinutesByAnyKeyword(address, (err, results) => {
+                if(err){
+                    return webhookReply(`The are error occur in database: ${err}`, httpResponse)
+                }
+    
+                updateConext('locationSearch', {
+                        address: address
+                    }, results.length, queryResult.queryText, textResponse)
+    
+                if(results.length == 0){
+                    return webhookReply(`There are no result about \`${address}\`, please search with other keyword.`, httpResponse)
+                }
+                
+                if(results.length > 1 && !(contexts.length > 2 && contexts[contexts.length - 2].intent == 'tooMuch - no') ){
+                    textResponse = `${results.length} results was found. Do you want to narrow down result? (Yes / No)`
+                    return webhookReply(textResponse, httpResponse)
+                }
+    
+                // textResponse = `${results} results was found. The results are showing below page:
+                //                 https://ai-fyp-meeting-emk.herokuapp.com/query?intent=locationSearch&address=${address}`
+                textResponseArray.push(`${results} results was found. The results are showing below page:`)
+                textResponseArray.push(`https://ai-fyp-meeting-emk.herokuapp.com/query?intent=locationSearch&address=${address}`);
+    
+                return webhookReply(textResponseArray, httpResponse)
+            })
+        }else{
+            let keywords = [address, queryResult.secondSearchParameters.keyword]
 
-            updateConext('locationSearch', {
-                    address: address
-                }, results.length, queryResult.queryText, textResponse)
-
-            if(results.length == 0){
-                return webhookReply(`There are no result about \`${address}\`, please search with other keyword.`, httpResponse)
-            }
-            
-            if(results.length > 1 && !(contexts.length > 2 && contexts[contexts.length - 2].intent == 'tooMuch - no') ){
-                textResponse = `${results.length} results was found. Do you want to narrow down result? (Yes / No)`
-                return webhookReply(textResponse, httpResponse)
-            }
-
-            // textResponse = `${results} results was found. The results are showing below page:
-            //                 https://ai-fyp-meeting-emk.herokuapp.com/query?intent=locationSearch&address=${address}`
-            textResponseArray.push(`${results} results was found. The results are showing below page:`)
-            textResponseArray.push(`https://ai-fyp-meeting-emk.herokuapp.com/query?intent=locationSearch&address=${address}`);
-
-            return webhookReply(textResponseArray, httpResponse)
-        })
+            DB.searchMinutesByTwoKeyword(keywords, (err, results) => {
+                if(err){
+                    return webhookReply(`There are error occur in database: ${err}`, httpResponse)
+                }
+    
+                updateConext('keywordSearch', {
+                        keyword: keywords
+                    }, results.length, queryResult.queryText, textResponse)
+    
+                if(results.length == 0){
+                    return webhookReply(`There are no result about \`${keyword}\`, please search with other keyword.`, httpResponse)
+                }
+    
+                // textResponse = `The results are showing below page:
+                //                 https://ai-fyp-meeting-emk.herokuapp.com/query?intent=keywordSearch&keyword1=${keywords[0]}&keyword2=${keywords[1]}&isSecondIntent=1`
+                textResponseArray.push(`${results} results was found. The results are showing below page:`)
+                textResponseArray.push(` https://ai-fyp-meeting-emk.herokuapp.com/query?intent=keywordSearch&keyword1=${keywords[0]}&keyword2=${keywords[1]}&isSecondIntent=1`);
+                return webhookReply(textResponseArray, httpResponse)
+            })
+        }
     }else{
         return webhookReply("No address detect in keywordSearchHandler", httpResponse);
     }
@@ -423,11 +447,12 @@ const narrowDownHandler = (queryResult, httpResponse) => {
         let keyword = queryResult.parameters.keyword ? queryResult.parameters.keyword : "";
         let textResponse = ""
         let previousIntent = contexts[contexts.length - 2].intent
+        let previousParameter = contexts[contexts.length - 2].parameters
 
         console.log("Previous Intent: ", previousIntent);
 
        if(previousIntent){
-            return seconIntentSwitchHandler(previousIntent, queryResult, httpResponse);
+            return seconIntentSwitchHandler(previousIntent, previousParameter, queryResult, httpResponse);
        }
     }
 
@@ -563,13 +588,18 @@ const intentSwitchHandler = (intent, queryResult, res) => {
     }
 }
 
-const seconIntentSwitchHandler = (firstIntent, queryResult, res) => {
+const seconIntentSwitchHandler = (firstIntent, previousParameter, queryResult, res) => {
+    let processedQueryResult = {
+        queryText: queryResult.queryText,
+        parameters: previousParameter,
+        secondSearchParameters: queryResult.parameters
+    }
     switch(firstIntent){
         case 'keywordSearch':
             keywordSearchHandler(queryResult, res, true);
             break;
         case 'locationSearch':
-            addressSearchHandler(queryResult, res)
+            addressSearchHandler(processedQueryResult, res, true)
             break;
         case 'numberingSearch':
             numberingSearchHandler(queryResult, res)
