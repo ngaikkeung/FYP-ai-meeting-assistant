@@ -184,7 +184,7 @@ const addressSearchHandler = (queryResult, httpResponse, isSecondIntent) => {
     let textResponse = "";
     let textResponseArray = [];
 
-    if(keyword){
+    if(address){
         if(!isSecondIntent){
             DB.searchMinutesByAnyKeyword(address, (err, results) => {
                 if(err){
