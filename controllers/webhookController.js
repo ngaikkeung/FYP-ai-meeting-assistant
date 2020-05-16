@@ -52,8 +52,10 @@ const webhookReply = (responseText, httpResponse) => {
 const wehookReplyRich = (payload, httpResponse) => {
     let  webhookResponse = {
         "fulfillmentMessages": [payload]
-    };
-    return httpResponse.json(payload) 
+    }
+    
+    console.log("Webhook response: ", JSON.stringify(webhookResponse));
+    return httpResponse.json(webhookResponse) 
 }
 
 const webhookReplyToTriggerIntent = (eventName, httpResponse) => {
@@ -152,22 +154,22 @@ const keywordSearchHandler = (queryResult, httpResponse, isSecondIntent = false)
                     // textResponse = `${results.length} results was found. Do you want to narrow down result? (Yes / No)`
                     // return webhookReply(textResponse, httpResponse)
                     let richPayload = {
-                        payload: {
+                        "payload": {
                             "richContent": [
                                 [
                                     {
-                                    "type": "button",
-                                    "icon": {
-                                        "type": "", // Default icon is arrow
-                                        "color": "#FF9800"
-                                    },
-                                    "text": "Button text",
-                                    "link": "https://example.com",
-                                    "event": {
-                                        "name": "",
-                                        "languageCode": "",
-                                        "parameters": {}
-                                    }
+                                        "type": "button",
+                                        "icon": {
+                                            "type": "", // Default icon is arrow
+                                            "color": "#FF9800"
+                                        },
+                                        "text": "Button text",
+                                        "link": "https://example.com",
+                                        "event": {
+                                            "name": "",
+                                            "languageCode": "",
+                                            "parameters": {}
+                                        }
                                     }
                                 ]
                             ]
