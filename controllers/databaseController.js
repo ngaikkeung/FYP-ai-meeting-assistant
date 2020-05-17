@@ -13,7 +13,7 @@ module.exports = class DB{
             if(err){
                 console.log("MongoClient connect err! ", err);
             }else{
-                // console.log("MongoClient connect Success! ");
+                console.log("MongoClient connect Success! ");
                 isConnected = true;
                 database = db.db(dbName);
             }
@@ -73,6 +73,20 @@ module.exports = class DB{
                date: {
                    $gte: new Date(period.startDate).getTime(),
                    $lte: new Date(period.endDate).getTime()
+               }
+            } 
+
+            return database.collection("minutes").find(search).toArray((error, items) => {
+                callback(error, items);
+            })
+        }
+
+        /** The period date is in millisecond format */
+        this.searchMinutesByPeiodMillisecond = (period, callback) => {
+            let search = { 
+               date: {
+                   $gte: period.startDate,
+                   $lte: period.endDate,
                }
             } 
 
