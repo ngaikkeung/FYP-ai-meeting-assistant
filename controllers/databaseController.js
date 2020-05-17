@@ -70,10 +70,10 @@ module.exports = class DB{
 
         this.searchMinutesByPeiod = (period, callback) => {
             let search = { 
-               date: {
-                   $gte: new Date(period.startDate).getTime(),
-                   $lte: new Date(period.endDate).getTime()
-               }
+                date: {
+                    $gte: new Date(period.startDate).getTime(),
+                    $lte: new Date(period.endDate).getTime()
+                }
             } 
 
             return database.collection("minutes").find(search).toArray((error, items) => {
@@ -84,10 +84,10 @@ module.exports = class DB{
         /** The period date is in millisecond format */
         this.searchMinutesByPeiodMillisecond = (period, callback) => {
             let search = { 
-               date: {
-                   $gte: period.startDate,
-                   $lte: period.endDate,
-               }
+                date: {
+                    $gte: parseInt(period.startDate),
+                    $lte: parseInt(period.endDate),
+                }
             } 
 
             return database.collection("minutes").find(search).toArray((error, items) => {
