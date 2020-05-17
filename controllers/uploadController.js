@@ -9,15 +9,19 @@ const formidable = require('formidable');
 const DB = new (require('./databaseController.js'))();
 const fs = require('fs');
 const pdf = require('pdf-parse');
+const ObjectId = require('mongodb').ObjectID;
 
-const PERSON_PREFIX = ['Mr', 'Ms', 'Miss', 'Dr', 'Ir'];
-const PERSON_TITLE = ['JP', 'MH', 'SBS', 'BBS'];
 
 exports.getUpload = (req, res) => {
     res.render('upload');
 }
 
 exports.postUpload = (req, res) => {
+    const form = new formidable.IncomingForm();
+    let pdfBase64Obj = {
+        '_id': new ObjectId(),
+        'pdf': null
+    }
     let minute = {
         'title' : null,
         'numberOfMeeting' : null,
@@ -25,16 +29,19 @@ exports.postUpload = (req, res) => {
         'time' : null,
         'venue' : null,
         'content' : null,
+        'pdf_id': pdfBase64Obj._id,
         'items' : []
-    }
-    const form = new formidable.IncomingForm();
+    };
     let pdfData = null;
+
     form.parse(req, (err, fields, files) => {
         if(err){
             return console.log("Parse form error: ", err);
         }
         let dataBuffer = fs.readFileSync(files.minute.path);
- 
+        let pdfBase64Data = new Buffer(dataBuffer).toString("base64");
+        pdfBase64Obj.pdf = pdfBase64Data
+
         pdf(dataBuffer).then(function(data) {
             // PDF text
             pdfData = data.text;
@@ -47,17 +54,39 @@ exports.postUpload = (req, res) => {
             DB.uploadMinute(minute, (err, res) => {
                 if(err){
                     console.log("DB insert failed. ", err);
+                    uploadResultPage(false)
                 }else{
                     if(res){
                         console.log("DB insert minute success!")
+                        uploadResultPage(true)
                     }else{
                         console.log("DB insert minute failed!")
-                        
+                        uploadResultPage(false)
                     }
                 }
             })
-            res.json(minute);
+            DB.uploadMinutePDF(pdfBase64Obj, (err, res) => {
+                if(err){
+                    console.log("DB insert failed. ", err);
+                    uploadResultPage(false)
+                }else{
+                    if(res){
+                        console.log("DB insert PDF success!")
+                        uploadResultPage(true)
+                    }else{
+                        console.log("DB insert PDF failed!")
+                        uploadResultPage(false)
+                    }
+                }
+            })
         });
+    })
+}
+
+const uploadResultPage = (success) => {
+    let status = success ? 'Succeeded' : 'Failed'
+    return res.render('uploadResult', {
+        status: status
     })
 }
 

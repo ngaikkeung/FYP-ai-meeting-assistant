@@ -6,6 +6,6 @@ const queryController = require('../controllers/queryController');
 router.get('/', queryController.resultsPage);
 
 // single document
-// router.get('/document/:id', queryController.documentPage);
+router.get('/document/:id', queryController.pdfPage);
 
 module.exports = router;

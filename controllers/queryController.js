@@ -102,6 +102,27 @@ exports.resultsPage = (req, res) => {
     }
 }
 
+exports.pdfPage = (req, res) => {
+    const PDF_ID = req.params.id;
+    if(isValidObjectId(PDF_ID)){
+        DB.getPDF(PDF_ID, (err, document) => {
+            if(err || !document){
+                return errorPage(res);
+            }
+            let data = Buffer.from(document.pdf, 'base64'); 
+            res.contentType("application/pdf");
+            res.send(data);
+        })
+    }else{
+        return errorPage(res);
+    }
+}
+
+const isValidObjectId = (id) => {
+    const objectIdReg = new RegExp("^[0-9a-fA-F]{24}$");
+    return objectIdReg.test(id)
+}
+
 const errorPage = (res) => {
     return res.render('error', {
         errTitle: '404 error',

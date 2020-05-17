@@ -13,7 +13,7 @@ module.exports = class DB{
             if(err){
                 console.log("MongoClient connect err! ", err);
             }else{
-                console.log("MongoClient connect Success! ");
+                // console.log("MongoClient connect Success! ");
                 isConnected = true;
                 database = db.db(dbName);
             }
@@ -23,6 +23,7 @@ module.exports = class DB{
             let documentToInsert = {
                 _id: ObjectId(),
                 title: minuteObj.title,
+                pdf_id: minuteObj.minuteObj,
                 numberOfMeeting: minuteObj.numberOfMeeting,
                 date: minuteObj.date,
                 time: minuteObj.time,
@@ -34,6 +35,29 @@ module.exports = class DB{
                 database.collection("minutes").insertOne(documentToInsert, (err, res) => {
                     callback(err, res);
                 })
+            }else{
+                callback(true, "DB is disconnected");
+            }
+        }
+
+        this.uploadMinutePDF = (pdfObj, callback) => {
+            if(isConnected){
+                database.collection("pdf").insertOne(pdfObj, (err, res) => {
+                    callback(err, res);
+                })
+            }else{
+                callback(true, "DB is disconnected");
+            }
+        }
+
+        this.getPDF = (id, callback) => {
+            if(isConnected){
+                let params = {
+                    pdf_id: ObjectId(id)
+                }
+                database.collection("pdf").findOne(params, (err, res) => {
+                    callback(err, res);
+                });
             }else{
                 callback(true, "DB is disconnected");
             }
