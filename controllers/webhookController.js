@@ -379,7 +379,7 @@ const periodSearchHandler = (queryResult, httpResponse, isSecondIntent = false) 
                     return wehookReplyList(`${results.length} results was found.\n Do you want to narrow down result? `, httpResponse)
                 }
     
-                return wehookReplyChip(`https://ai-fyp-meeting-emk.herokuapp.com/query?intent=periodSearch&startDate=${new Date().getTime(period.startDate)}&endDate=${new Date().getTime(period.endDate)}`, httpResponse)
+                return wehookReplyChip(`https://ai-fyp-meeting-emk.herokuapp.com/query?intent=periodSearch&startDate=${new Date(period.startDate).getTime()}&endDate=${new Date(period.endDate).getTime()}`, httpResponse)
             })
         }else{
             let payload = {
@@ -404,7 +404,7 @@ const periodSearchHandler = (queryResult, httpResponse, isSecondIntent = false) 
                     return webhookReply(`There are no result within the period \`${startDate} - ${endDate}\` and keyword \`${payload.keyword}\`, please search again.`, httpResponse)
                 }
                 
-                return wehookReplyChip(`https://ai-fyp-meeting-emk.herokuapp.com/query?intent=periodSearch&startDate=${new Date().getTime(period.startDate)}&endDate=${new Date().getTime(period.endDate)}&keyword=${payload.keyword}&isSecondIntent=1`, httpResponse)
+                return wehookReplyChip(`https://ai-fyp-meeting-emk.herokuapp.com/query?intent=periodSearch&startDate=${new Date(period.startDate).getTime()}&endDate=${new Date(period.endDate).getTime()}&keyword=${payload.keyword}&isSecondIntent=1`, httpResponse)
             })
         }
         
@@ -446,7 +446,7 @@ const dateSearchHandler = (queryResult, httpResponse, isSecondIntent = false) =>
                     return wehookReplyList(`${results.length} results was found.\n Do you want to narrow down result? `, httpResponse)
                 }
     
-                return wehookReplyChip(`https://ai-fyp-meeting-emk.herokuapp.com/query?intent=dateSearch&startDate=${new Date().getTime(period.startDate)}&endDate=${new Date().getTime(period.endDate)}`, httpResponse)
+                return wehookReplyChip(`https://ai-fyp-meeting-emk.herokuapp.com/query?intent=dateSearch&startDate=${new Date(period.startDate).getTime()}&endDate=${new Date(period.endDate).getTime()}`, httpResponse)
             })
         }else{
             let payload = {
@@ -471,7 +471,7 @@ const dateSearchHandler = (queryResult, httpResponse, isSecondIntent = false) =>
                     return webhookReply(`There are no result within the period \`${startDate} - ${endDate}\` and keyword \`${payload.keyword}\`, please search again.`, httpResponse)
                 }
 
-                return wehookReplyChip(`https://ai-fyp-meeting-emk.herokuapp.com/query?intent=dateSearch&startDate=${new Date().getTime(period.startDate)}&endDate=${new Date().getTime(period.endDate)}&keyword=${payload.keyword}&isSecondIntent=1`, httpResponse)
+                return wehookReplyChip(`https://ai-fyp-meeting-emk.herokuapp.com/query?intent=dateSearch&startDate=${new Date(period.startDate).getTime()}&endDate=${new Date(period.endDate).getTime()}&keyword=${payload.keyword}&isSecondIntent=1`, httpResponse)
             })
         }
        
