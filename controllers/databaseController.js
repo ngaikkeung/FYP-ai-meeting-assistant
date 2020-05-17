@@ -247,7 +247,7 @@ module.exports = class DB{
                 })
             }else if(payload.timeWord && payload.number){
                 let limit = {
-                    $limit: payload.number
+                    $limit: parseInt(payload.number)
                 }
                 aggregateArray.push(limit)
 
