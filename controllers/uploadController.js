@@ -54,28 +54,28 @@ exports.postUpload = (req, res) => {
             DB.uploadMinute(minute, (err, res) => {
                 if(err){
                     console.log("DB insert failed. ", err);
-                    uploadResultPage(false)
+                    uploadResultPage(false, res)
                 }else{
                     if(res){
                         console.log("DB insert minute success!")
-                        uploadResultPage(true)
+                        uploadResultPage(true, res)
                     }else{
                         console.log("DB insert minute failed!")
-                        uploadResultPage(false)
+                        uploadResultPage(false, res)
                     }
                 }
             })
             DB.uploadMinutePDF(pdfBase64Obj, (err, res) => {
                 if(err){
                     console.log("DB insert failed. ", err);
-                    uploadResultPage(false)
+                    uploadResultPage(false, res)
                 }else{
                     if(res){
                         console.log("DB insert PDF success!")
-                        uploadResultPage(true)
+                        uploadResultPage(true, res)
                     }else{
                         console.log("DB insert PDF failed!")
-                        uploadResultPage(false)
+                        uploadResultPage(false, res)
                     }
                 }
             })
@@ -83,7 +83,7 @@ exports.postUpload = (req, res) => {
     })
 }
 
-const uploadResultPage = (success) => {
+const uploadResultPage = (success, res) => {
     let status = success ? 'Succeeded' : 'Failed'
     return res.render('uploadResult', {
         status: status
