@@ -51,12 +51,12 @@ exports.postUpload = (req, res) => {
             extractBasicInforOfMeeting(pdfBasicInfoPartText, minute);
             extractItemOfMeeting(endPartOfText, minute)
             
-            DB.uploadMinute(minute, (err, res) => {
+            DB.uploadMinute(minute, (err, results) => {
                 if(err){
                     console.log("DB insert failed. ", err);
                     uploadResultPage(false, res)
                 }else{
-                    if(res){
+                    if(results){
                         console.log("DB insert minute success!")
                         uploadResultPage(true, res)
                     }else{
@@ -65,12 +65,12 @@ exports.postUpload = (req, res) => {
                     }
                 }
             })
-            DB.uploadMinutePDF(pdfBase64Obj, (err, res) => {
+            DB.uploadMinutePDF(pdfBase64Obj, (err, results) => {
                 if(err){
                     console.log("DB insert failed. ", err);
                     uploadResultPage(false, res)
                 }else{
-                    if(res){
+                    if(results){
                         console.log("DB insert PDF success!")
                         uploadResultPage(true, res)
                     }else{
