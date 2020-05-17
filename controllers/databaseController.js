@@ -101,7 +101,7 @@ module.exports = class DB{
                     callback(error, items);
                 })
             }else if(payload.timeWord && payload.number){
-                return database.collection("minutes").find({}).sort({numberOfMeeting: -1}).limit(payload.number).toArray((error, items) => {
+                return database.collection("minutes").find({}).sort({numberOfMeeting: -1}).limit(parseInt(payload.number)).toArray((error, items) => {
                     return callback(error, items);
                 })
             }else{
@@ -125,6 +125,40 @@ module.exports = class DB{
                                 date:{
                                     $gte: new Date(payload.period.startDate).getTime(),
                                     $lte: new Date(payload.period.endDate).getTime()
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    $sort: {
+                        score: {
+                            $meta: "textScore"
+                        }
+                    }
+                }
+            ]
+           
+            return database.collection("minutes").aggregate(aggregateArray).toArray((error, items) => {
+                callback(error, items);
+            })
+        }
+
+        /** The period date is in millisecond format */
+        this.searchMinutesByAnyKeywordPeriodMillisecond = (payload, callback) => {
+            let aggregateArray = [
+                {
+                    $match: {
+                        $and:[
+                            {
+                                $text: {
+                                        $search: payload.keyword 
+                                    }
+                            },
+                            {
+                                date:{
+                                    $gte: parseInt(payload.period.startDate),
+                                    $lte: parseInt(payload.period.endDate)
                                 }
                             }
                         ]

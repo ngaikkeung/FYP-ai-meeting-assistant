@@ -9,14 +9,6 @@ exports.resultsPage = (req, res) => {
         if(!isSecondIntent){
             switch(intent){
                 case 'keywordSearch':
-                    DB.searchMinutesByAnyKeyword(req.query.keyword, (err, results) => {
-                        if(err){
-                            return errorPage(res)
-                        }
-                        console.log("results: ",results.length);
-                        return resultsPage(results, res)
-                    })
-                    break;
                 case 'locationSearch':
                     DB.searchMinutesByAnyKeyword(req.query.keyword, (err, results) => {
                         if(err){
@@ -56,8 +48,54 @@ exports.resultsPage = (req, res) => {
                 default:
                     return errorPage(res)
             }
-        }else{
-
+        }else{ /** Two intent */
+            console.log("Two intent: ", req.query);
+            switch(intent){
+                case 'keywordSearch':
+                case 'locationSearch':
+                    payload = [req.query.keyword1, req.query.keyword2]
+                    DB.searchMinutesByTwoKeyword(payload, (err, results) => {
+                        if(err){
+                            return errorPage(res)
+                        }
+                        console.log("results: ",results.length);
+                        return resultsPage(results, res)
+                    })
+                    break;
+                case 'numberingSearch':
+                    payload = {
+                        timeWord: req.query.time,
+                        number: req.query.number,
+                        keyword: req.query.keyword
+                    }
+                    DB.searchMinutesByNumberingAndKeyword(payload, (err, results) => {
+                        if(err){
+                            return errorPage(res)
+                        }
+                        console.log("results: ",results.length);
+                        return resultsPage(results, res)
+                    })
+                    break;
+                case 'periodSearch':
+                case 'dateSearch':
+                    payload = {
+                        period: {
+                            startDate: req.query.startDate,
+                            endDate: req.query.endDate
+                        },
+                        keyword: req.query.keyword
+                    }
+                    DB.searchMinutesByAnyKeywordPeriodMillisecond(payload, (err, results) => {
+                        if(err){
+                            return errorPage(res)
+                        }
+                        console.log("results: ",results.length);
+                        return resultsPage(results, res)
+                    })
+                    break;
+                default:
+                    return errorPage(res)
+            }
         }
     }else{
         return errorPage(res)
@@ -101,6 +139,15 @@ const isValidQuery = (query) => {
 
     if(!isSecondIntent){
         for(let params of oneIntentRequiredParm[intent]){
+            /** 
+             * Special case for numberingSearch intent 
+             * 
+             * `time` and `number` at least one
+            */
+            if(intent == 'numberingSearch'){
+                if((query.time && !number) || (!query.time && number) || (query.time && number))
+                    return true
+            }
             if(!query[params]){
                 console.log(`Query parms: ${params} missing.`);
                 console.log('Query: ', query);

@@ -372,7 +372,7 @@ const periodSearchHandler = (queryResult, httpResponse, isSecondIntent = false) 
                 }, results.length, queryResult.queryText, textResponse)
     
                 if(results.length == 0){
-                    return webhookReply(`There are no result within the period \`${period.startDate} - ${period.endDate}\`, please search again.`, httpResponse)
+                    return webhookReply(`There are no result within the period \`${new Date(period.startDate).getDate()}-${new Date(period.startDate).getMonth() + 1}-${new Date(period.startDate).getFullYear()} - ${new Date(period.endDate).getDate()}-${new Date(period.endDate).getMonth() + 1}-${new Date(period.endDate).getFullYear()}\`, please search again.`, httpResponse)
                 }
     
                 if(results.length > 1 && !(contexts.length > 2 && contexts[contexts.length - 2].intent == 'tooMuch - no') ){
@@ -401,7 +401,7 @@ const periodSearchHandler = (queryResult, httpResponse, isSecondIntent = false) 
                 }, results.length, queryResult.queryText, textResponse)
     
                 if(results.length == 0){
-                    return webhookReply(`There are no result within the period \`${startDate} - ${endDate}\` and keyword \`${payload.keyword}\`, please search again.`, httpResponse)
+                    return webhookReply(`There are no result within the period \`${new Date(period.startDate).getDate()}-${new Date(period.startDate).getMonth() + 1}-${new Date(period.startDate).getFullYear()} - ${new Date(period.endDate).getDate()}-${new Date(period.endDate).getMonth() + 1}-${new Date(period.endDate).getFullYear()}\`, please search again.`, httpResponse)
                 }
                 
                 return wehookReplyChip(`https://ai-fyp-meeting-emk.herokuapp.com/query?intent=periodSearch&startDate=${new Date(period.startDate).getTime()}&endDate=${new Date(period.endDate).getTime()}&keyword=${payload.keyword}&isSecondIntent=1`, httpResponse)
@@ -440,7 +440,7 @@ const dateSearchHandler = (queryResult, httpResponse, isSecondIntent = false) =>
                 }, results.length, queryResult.queryText, textResponse)
                 
                 if(results.length == 0){
-                    return webhookReply(`There are no result within the period \`${startDate} - ${endDate}\`, please search again.`, httpResponse)
+                    return webhookReply(`There are no result within \`${new Date(dateTime.startDate).getDate()}-${new Date(dateTime.startDate).getMonth() + 1}-${new Date(dateTime.startDate).getFullYear()} - ${new Date(dateTime.endDate).getDate()}-${new Date(dateTime.endDate).getMonth() + 1}-${new Date(dateTime.endDate).getFullYear()}\`, please search again.`, httpResponse)
                 }
                 if(results.length > 1 && !(contexts.length > 2 && contexts[contexts.length - 2].intent == 'tooMuch - no') ){
                     return wehookReplyList(`${results.length} results was found.\n Do you want to narrow down result? `, httpResponse)
@@ -468,7 +468,7 @@ const dateSearchHandler = (queryResult, httpResponse, isSecondIntent = false) =>
                 }, results.length, queryResult.queryText, textResponse)
                 
                 if(results.length == 0){
-                    return webhookReply(`There are no result within the period \`${startDate} - ${endDate}\` and keyword \`${payload.keyword}\`, please search again.`, httpResponse)
+                    return webhookReply(`There are no result within \`${new Date(payload.period.startDate).getDate()}-${new Date(payload.period.startDate).getMonth() + 1}-${new Date(payload.period.startDate).getFullYear()} - ${new Date(payload.period.endDate).getDate()}-${new Date(payload.period.endDate).getMonth() + 1}-${new Date(payload.period.endDate).getFullYear()}\`, please search again.`, httpResponse)
                 }
 
                 return wehookReplyChip(`https://ai-fyp-meeting-emk.herokuapp.com/query?intent=dateSearch&startDate=${new Date(period.startDate).getTime()}&endDate=${new Date(period.endDate).getTime()}&keyword=${payload.keyword}&isSecondIntent=1`, httpResponse)
