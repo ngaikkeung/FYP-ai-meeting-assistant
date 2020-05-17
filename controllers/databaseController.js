@@ -23,7 +23,7 @@ module.exports = class DB{
             let documentToInsert = {
                 _id: ObjectId(),
                 title: minuteObj.title,
-                pdf_id: minuteObj.minuteObj,
+                pdf_id: minuteObj.pdf_id,
                 numberOfMeeting: minuteObj.numberOfMeeting,
                 date: minuteObj.date,
                 time: minuteObj.time,
