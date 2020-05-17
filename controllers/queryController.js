@@ -145,7 +145,7 @@ const isValidQuery = (query) => {
              * `time` and `number` at least one
             */
             if(intent == 'numberingSearch'){
-                if((query.time && !number) || (!query.time && number) || (query.time && number))
+                if((query.time && !query.number) || (!query.time && query.number) || (query.time && query.number))
                     return true
             }
             if(!query[params]){
