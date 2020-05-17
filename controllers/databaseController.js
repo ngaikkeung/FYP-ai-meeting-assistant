@@ -53,7 +53,7 @@ module.exports = class DB{
         this.getPDF = (id, callback) => {
             if(isConnected){
                 let params = {
-                    pdf_id: ObjectId(id)
+                    '_id': new ObjectId(id)
                 }
                 database.collection("pdf").findOne(params, (err, res) => {
                     callback(err, res);
