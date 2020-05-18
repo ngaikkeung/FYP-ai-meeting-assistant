@@ -508,7 +508,6 @@ const keywordPeriodSearchHandler = (queryResult, httpResponse) => {
             
             if(results.length == 0){
                 return webhookReply("There are no result, please search again.", httpResponse)
-                // return webhookReplyToTriggerIntent('KeywordSearch-NoResult' , httpResponse)
             }
           
             textResponse = `The results are showing below page:
@@ -529,7 +528,7 @@ const keywordDatedSearchHandler = (queryResult, httpResponse) => {
     }
     let textResponse = ""
 
-    if(keyword && period){
+    if(keyword && dateTime){
         if(typeof dateTime == 'string'){
             dateTime = {
                 startDate: new Date(dateTime).getTime(),
@@ -556,7 +555,6 @@ const keywordDatedSearchHandler = (queryResult, httpResponse) => {
 
             if(results.length == 0){
                 return webhookReply("There are no result, please search again.", httpResponse)
-                // return webhookReplyToTriggerIntent('KeywordSearch-NoResult', httpResponse)
             }
 
             for(let result of results){
