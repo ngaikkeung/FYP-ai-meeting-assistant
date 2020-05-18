@@ -36,7 +36,7 @@
         <h1 class="text-center">PowerMeeting</h1>
         <h4>Search Result:</h4>    
         <small>Number of result: <%= results.length %></small>   
-        <div class="list-group">
+        <div class="list-group" id="result-list">
             <% for(i=0; i < results.length ; i++){ %>
 
                 <div class="list-group-item list-group-item-action flex-column align-items-start">
@@ -50,24 +50,35 @@
                     var date = `${new Date(<%= results[i].date %>).getDate()}-${new Date(<%= results[i].date %>).getMonth() + 1}-${new Date(<%= results[i].date %>).getFullYear()}`;
                     document.getElementById("date-<%= i %>").innerHTML = date;                    
                     
-                    var fullcontent = "<%= results[i].content %>";
+                    var fullcontent = `<%= results[i].content %>`;
                     var key = [];
                     var displaycontent = "";
-                    console.log("document i: ", <%= i%>);
-                    for (keywposition = fullcontent.toLowerCase().indexOf(keywords[0]); keywposition >= 0; keywposition = fullcontent.toLowerCase().indexOf(keywords[0], keywposition + 1)) {
-                        key.push(keywposition);
-                        console.log("Key position: ", key);
-                        console.log("Keyword: ", keywords[0]);
-                        
-                        
+
+                    if(keywords[0].split(" ").length > 0){ // First keyword split to array success
+                        let firstKeywords = keywords[0].split(" ")
+
+                        for(let keyword of firstKeywords){
+                            for (keywposition = fullcontent.toLowerCase().indexOf(keyword); keywposition >= 0; keywposition = fullcontent.toLowerCase().indexOf(keyword, keywposition + 1)) {
+                                key.push(keywposition);
+                            }
+                            if(key.length > 0){
+                                break;
+                            }
+                        }
+                    }else{ // First keyword is single word.
+                        for (keywposition = fullcontent.toLowerCase().indexOf(keywords[0]); keywposition >= 0; keywposition = fullcontent.toLowerCase().indexOf(keywords[0], keywposition + 1)) {
+                            key.push(keywposition);
+                        }
                     }
                     for (i = 0; i < key.length; i++){
                         var frontcontent = fullcontent.substring(0, key[i]);
                         var backcontent = fullcontent.substring(key[i]);
                         var front = frontcontent.lastIndexOf(".");
                         var back = backcontent.indexOf(".");
-                        if (key[i] > front && key[i] < back){
-                            continue;
+                        if(i > 0){
+                            if (key[i-1] > front && key[i-1] < back){
+                                continue;
+                            }
                         }
                         displaycontent += frontcontent.substring(front+1) + backcontent.substring(0, back+1);
 
@@ -83,10 +94,8 @@
 
   window.addEventListener("DOMContentLoaded", function(e) {
       if(keywords.length > 0){
-        var myHilitor2 = new Hilitor();
+        var myHilitor2 = new Hilitor("result-list");
         myHilitor2.setMatchType("left");
-        
-
         myHilitor2.apply(keywords.join(" "));
       }
   }, false);
