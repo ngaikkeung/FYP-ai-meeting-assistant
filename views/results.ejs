@@ -17,7 +17,6 @@
     </style>
     <script>
         const queryString = window.location.search;
-        var keyword = new URLSearchParams(queryString).get("keyword")
         let keywords = [];
         let isSecondIntent = new URLSearchParams(queryString).get("isSecondIntent");
         let intent = new URLSearchParams(queryString).get("intent");
@@ -26,7 +25,9 @@
             keywords.push(new URLSearchParams(queryString).get("keyword1").toLowerCase())
             keywords.push(new URLSearchParams(queryString).get("keyword2").toLowerCase())
         }else{
-            keywords.push(keyword.toLocaleLowerCase())
+            if(new URLSearchParams(queryString).get("keyword")){
+                keywords.push(new URLSearchParams(queryString).get("keyword").toLowerCase())
+            }
         }
     </script>
     <title>Searching Result</title>
@@ -53,36 +54,42 @@
                     var fullcontent = `<%= results[i].content %>`;
                     var key = [];
                     var displaycontent = "";
-
-                    if(keywords[0].split(" ").length > 0){ // First keyword split to array success
-                        let firstKeywords = keywords[0].split(" ")
-
-                        for(let keyword of firstKeywords){
-                            for (keywposition = fullcontent.toLowerCase().indexOf(keyword); keywposition >= 0; keywposition = fullcontent.toLowerCase().indexOf(keyword, keywposition + 1)) {
+                    if(keywords.length > 0){
+                        if(keywords[0].split(" ").length > 0){ // First keyword split to array success
+                            let firstKeywords = keywords[0].split(" ")
+                            for(let keyword of firstKeywords){
+                                for (keywposition = fullcontent.toLowerCase().indexOf(keyword); keywposition >= 0; keywposition = fullcontent.toLowerCase().indexOf(keyword, keywposition + 1)) {
+                                    key.push(keywposition);
+                                }
+                                if(key.length > 0){
+                                    break;
+                                }
+                            }
+                        }else{ // First keyword is single word.
+                            for (keywposition = fullcontent.toLowerCase().indexOf(keywords[0]); keywposition >= 0; keywposition = fullcontent.toLowerCase().indexOf(keywords[0], keywposition + 1)) {
                                 key.push(keywposition);
                             }
-                            if(key.length > 0){
-                                break;
-                            }
                         }
-                    }else{ // First keyword is single word.
-                        for (keywposition = fullcontent.toLowerCase().indexOf(keywords[0]); keywposition >= 0; keywposition = fullcontent.toLowerCase().indexOf(keywords[0], keywposition + 1)) {
-                            key.push(keywposition);
-                        }
-                    }
-                    for (i = 0; i < key.length; i++){
-                        var frontcontent = fullcontent.substring(0, key[i]);
-                        var backcontent = fullcontent.substring(key[i]);
-                        var front = frontcontent.lastIndexOf(".");
-                        var back = backcontent.indexOf(".");
-                        if(i > 0){
-                            if (key[i-1] > front && key[i-1] < back){
-                                continue;
-                            }
-                        }
-                        displaycontent += frontcontent.substring(front+1) + backcontent.substring(0, back+1);
 
+                        /** 
+                         * Show the keyword relevant paragraph
+                         */
+                        for (i = 0; i < key.length; i++){
+                            var frontcontent = fullcontent.substring(0, key[i]);
+                            var backcontent = fullcontent.substring(key[i]);
+                            var front = frontcontent.lastIndexOf(".");
+                            var back = backcontent.indexOf(".");
+                            if(i > 0){
+                                if (key[i-1] > front && key[i-1] < back){
+                                    continue;
+                                }
+                            }
+                            displaycontent += frontcontent.substring(front+1) + backcontent.substring(0, back+1);
+                        }
+                    }else{
+                        displaycontent += fullcontent;
                     }
+                    
                     document.getElementById("content<%= i %>").innerHTML = displaycontent;
                 </script>
             <% } %>
