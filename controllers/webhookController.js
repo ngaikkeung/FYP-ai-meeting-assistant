@@ -230,7 +230,7 @@ const keywordSearchHandler = (queryResult, httpResponse, isSecondIntent = false)
                 return wehookReplyChip(`https://ai-fyp-meeting-emk.herokuapp.com/query?intent=keywordSearch&keyword=${keyword}`, httpResponse)
             })
         }else{
-            let keywords = [keyword, contexts[contexts.length - 2].parameters.keyword]
+            let keywords = [contexts[contexts.length - 2].parameters.keyword, keyword]
 
             DB.searchMinutesByTwoKeyword(keywords, (err, results) => {
                 if(err){
