@@ -501,8 +501,8 @@ const keywordPeriodSearchHandler = (queryResult, httpResponse) => {
             updateConext('keyword-periodSearch', {
                     keyword: keyword, 
                     "date-time":{
-                        startDate: dateTime.startDate, 
-                        endDate: dateTime.endDate
+                        startDate: period.startDate, 
+                        endDate: period.endDate
                     }
             }, results.length, queryResult.queryText, textResponse)
             
@@ -549,8 +549,8 @@ const keywordDatedSearchHandler = (queryResult, httpResponse) => {
             updateConext('keyword-DateSearch', {
                     keyword: keyword, 
                     "date-time": {
-                        startDate: period.startDate, 
-                        endDate: period.endDate
+                        startDate: dateTime.startDate, 
+                        endDate: dateTime.endDate
                     }
             }, results.length, queryResult.queryText, textResponse)
 
