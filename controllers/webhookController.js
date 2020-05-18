@@ -251,7 +251,7 @@ const keywordSearchHandler = (queryResult, httpResponse, isSecondIntent = false)
             })
         }
     }else{
-        return webhookReply("No keyword detect in keywordSearchHandler", httpResponse);
+        return webhookReply("Please follow the suggested instruction to search.", httpResponse);
     }
 }
 
@@ -301,7 +301,7 @@ const addressSearchHandler = (queryResult, httpResponse, isSecondIntent = false)
             })
         }
     }else{
-        return webhookReply("No address detect in keywordSearchHandler", httpResponse);
+        return webhookReply("Please follow the suggested instruction to search.", httpResponse);
     }
 }
 
@@ -409,7 +409,7 @@ const periodSearchHandler = (queryResult, httpResponse, isSecondIntent = false) 
         }
         
     }else{
-        return webhookReply("No period detect in periodSearchHandler", httpResponse);
+        return webhookReply("Please follow the suggested instruction to search.", httpResponse);
     }
 }
 
@@ -476,7 +476,7 @@ const dateSearchHandler = (queryResult, httpResponse, isSecondIntent = false) =>
         }
        
     }else{
-        return webhookReply("No date time detect in periodSearchHandler", httpResponse);
+        return webhookReply("Please follow the suggested instruction to search.", httpResponse);
     }
 }
 
@@ -516,7 +516,7 @@ const keywordPeriodSearchHandler = (queryResult, httpResponse) => {
             return webhookReply(textResponse, httpResponse)
         })
     }else{
-        return webhookReply("No keyword detect in keywordPeriodSearchHandler", httpResponse);
+        return webhookReply("Please follow the suggested instruction to search.", httpResponse);
     }
 }
 
@@ -566,7 +566,7 @@ const keywordDatedSearchHandler = (queryResult, httpResponse) => {
             return webhookReply(textResponse, httpResponse)
         })
     }else{
-        return webhookReply("No keyword detect in keywordDateSearchHandler", httpResponse);
+        return webhookReply("Please follow the suggested instruction to search.", httpResponse);
     }
 }
 
