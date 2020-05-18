@@ -17,14 +17,25 @@
     </style>
     <script>
         const queryString = window.location.search;
-        var keyword = new URLSearchParams(queryString).get("keyword");
+        var keyword = new URLSearchParams(queryString).get("keyword")
+        let keywords = [];
+        let isSecondIntent = new URLSearchParams(queryString).get("isSecondIntent");
+        let intent = new URLSearchParams(queryString).get("intent");
+
+        if(isSecondIntent && intent == 'keywordSearch'){
+            keywords.push(new URLSearchParams(queryString).get("keyword1").toLowerCase())
+            keywords.push(new URLSearchParams(queryString).get("keyword2").toLowerCase())
+        }else{
+            keywords.push(keyword.toLocaleLowerCase())
+        }
     </script>
     <title>Searching Result</title>
 </head>
 <body>
     <div class="container">
         <h1 class="text-center">PowerMeeting</h1>
-        <h4>Search Result:</h4>       
+        <h4>Search Result:</h4>    
+        <small>Number of result: <%= results.length %></small>   
         <div class="list-group">
             <% for(i=0; i < results.length ; i++){ %>
 
@@ -33,17 +44,22 @@
                     <h5 class="mb-1"><a href="/query/document/<%= results[i].pdf_id %>"><%= results[i].title %></a></h5>
                     </div>
                     <p class="mb-1 highli" id="content<%= i %>" ></p>
-                    <small id="date"></small>
+                    <small id="date-<%= i %>"></small>
                 </div>
                 <script>
-                    var date = new Date(<%= results[i].date %>);
-                    document.getElementById("date").innerHTML = date;                    
+                    var date = `${new Date(<%= results[i].date %>).getDate()}-${new Date(<%= results[i].date %>).getMonth() + 1}-${new Date(<%= results[i].date %>).getFullYear()}`;
+                    document.getElementById("date-<%= i %>").innerHTML = date;                    
                     
                     var fullcontent = "<%= results[i].content %>";
                     var key = [];
                     var displaycontent = "";
-                    for (keywposition = fullcontent.toLowerCase().indexOf(keyword); keywposition >= 0; keywposition = fullcontent.toLowerCase().indexOf(keyword, keywposition + 1)) {
+                    console.log("document i: ", <%= i%>);
+                    for (keywposition = fullcontent.toLowerCase().indexOf(keywords[0]); keywposition >= 0; keywposition = fullcontent.toLowerCase().indexOf(keywords[0], keywposition + 1)) {
                         key.push(keywposition);
+                        console.log("Key position: ", key);
+                        console.log("Keyword: ", keywords[0]);
+                        
+                        
                     }
                     for (i = 0; i < key.length; i++){
                         var frontcontent = fullcontent.substring(0, key[i]);
@@ -54,9 +70,6 @@
                             continue;
                         }
                         displaycontent += frontcontent.substring(front+1) + backcontent.substring(0, back+1);
-                        //console.log(displaycontent);
-                        // console.log(frontcontent);
-                        // console.log(backcontent);
 
                     }
                     document.getElementById("content<%= i %>").innerHTML = displaycontent;
@@ -69,12 +82,13 @@
 <script>
 
   window.addEventListener("DOMContentLoaded", function(e) {
-    var hiliclass = document.getElementsByClassName("highli");
-    for (i=0; i<hiliclass.length; i++){
-        var myHilitor2 = new Hilitor("content" + i);
+      if(keywords.length > 0){
+        var myHilitor2 = new Hilitor();
         myHilitor2.setMatchType("left");
-        myHilitor2.apply(keyword);
-    }
+        
+
+        myHilitor2.apply(keywords.join(" "));
+      }
   }, false);
 
 </script>

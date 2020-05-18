@@ -8,7 +8,7 @@ function Hilitor(id, tag)
   var targetNode = document.getElementById(id) || document.body;
   var hiliteTag = tag || "MARK";
   var skipTags = new RegExp("^(?:" + hiliteTag + "|SCRIPT|FORM|SPAN)$");
-  var colors = ["#f99"];
+  var colors = ["transparent"];
   var wordColor = [];
   var colorIdx = 0;
   var matchRegExp = "";
@@ -102,7 +102,7 @@ function Hilitor(id, tag)
         var match = document.createElement(hiliteTag);
         match.appendChild(document.createTextNode(regs[0]));
         match.style.backgroundColor = wordColor[regs[0].toLowerCase()];
-        match.style.color = "#000";
+        match.style.color = "red";
 
         var after = node.splitText(regs.index);
         after.nodeValue = after.nodeValue.substring(regs[0].length);
